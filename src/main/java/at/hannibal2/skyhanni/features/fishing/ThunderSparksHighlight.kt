@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.BlockUtils.getBlockAt
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.hasSkullTexture
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
@@ -20,7 +19,6 @@ import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SpecialColor.toSpecialColor
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.init.Blocks
 
 @SkyHanniModule
 object ThunderSparksHighlight {
@@ -47,14 +45,11 @@ object ThunderSparksHighlight {
         for (spark in sparks) {
             if (spark.isDead) continue
             val sparkLocation = spark.getLorenzVec()
-            val block = sparkLocation.getBlockAt()
-            val seeThroughBlocks =
-                sparkLocation.distanceToPlayer() < 6 && (block == Blocks.flowing_lava || block == Blocks.lava)
             event.drawWaypointFilled(
-                sparkLocation.add(-0.5, 0.0, -0.5), color, extraSize = -0.25, seeThroughBlocks = seeThroughBlocks,
+                sparkLocation.add(-0.5, 0.0, -0.5), color, extraSize = -0.25, seeThroughBlocks = true,
             )
             if (sparkLocation.distanceToPlayer() < 10) {
-                event.drawString(sparkLocation.up(1.5), "Thunder Spark", seeThroughBlocks = seeThroughBlocks)
+                event.drawString(sparkLocation.up(1.5), "Thunder Spark", seeThroughBlocks = true)
             }
         }
     }
