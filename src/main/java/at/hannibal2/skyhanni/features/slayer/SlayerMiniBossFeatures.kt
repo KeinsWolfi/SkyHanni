@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.mob.Mob
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
+import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.LorenzColor
@@ -24,6 +25,7 @@ object SlayerMiniBossFeatures {
         if (!SlayerMiniBossType.isMiniboss(mob.name)) return
         miniBosses += mob
         if (config.slayerMinibossHighlight) mob.highlight(LorenzColor.AQUA.toColor())
+        RenderLivingEntityHelper.setEntityChams(mob.baseEntity) { true }
     }
 
     @HandleEvent

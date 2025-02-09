@@ -20,5 +20,6 @@ object HighlightInquisitors {
 
         val color = config.color.toSpecialColorInt()
         RenderLivingEntityHelper.setEntityColorWithNoHurtTime(inquisitor, color) { config.highlightInquisitors }
+        RenderLivingEntityHelper.setEntityChams(inquisitor) { true }
     }
 }

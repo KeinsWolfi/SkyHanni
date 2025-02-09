@@ -4,7 +4,11 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
+import net.minecraftforge.client.event.RenderLivingEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @SkyHanniModule
@@ -14,6 +18,8 @@ object RenderLivingEntityHelper {
     private val entityColorCondition = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
     private val entityNoHurtTimeCondition = mutableMapOf<EntityLivingBase, () -> Boolean>()
+
+    private val entityChamsMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
     @HandleEvent
     fun onWorldChange(event: WorldChangeEvent) {
@@ -59,6 +65,10 @@ object RenderLivingEntityHelper {
         removeNoHurtTime(entity)
     }
 
+    fun <T : EntityLivingBase> setEntityChams(entity: T, condition: () -> Boolean) {
+        entityChamsMap[entity] = condition
+    }
+
     @JvmStatic
     fun <T : EntityLivingBase> internalSetColorMultiplier(entity: T): Int {
         if (!SkyHanniDebugsAndTests.globalRender) return 0
@@ -81,5 +91,31 @@ object RenderLivingEntityHelper {
             }
         }
         return entity.hurtTime
+    }
+
+    @JvmStatic
+    fun <T : EntityLivingBase> internalChams(entity: T): Boolean {
+        if (!SkyHanniDebugsAndTests.globalRender) return false
+        if (entityChamsMap.containsKey(entity)) {
+            val condition = entityChamsMap[entity]!!
+            if (condition.invoke()) {
+                return true
+            }
+        }
+        return false
+    }
+
+    @SubscribeEvent
+    fun onRenderLivingEntities(event: RenderLivingEvent.Pre<*>) {
+        val entity = event.entity
+        if (!internalChams(entity)) return
+        GlStateManager.depthFunc(GL11.GL_ALWAYS)
+    }
+
+    @SubscribeEvent
+    fun onRenderLivingEntities(event: RenderLivingEvent.Post<*>) {
+        val entity = event.entity
+        if (!internalChams(entity)) return
+        GlStateManager.depthFunc(GL11.GL_LEQUAL)
     }
 }
