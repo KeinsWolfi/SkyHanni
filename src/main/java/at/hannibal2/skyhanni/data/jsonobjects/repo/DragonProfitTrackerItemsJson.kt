@@ -4,5 +4,9 @@ import at.hannibal2.skyhanni.utils.NeuInternalName
 import com.google.gson.annotations.Expose
 
 data class DragonProfitTrackerItemsJson(
-    @Expose val items: List<NeuInternalName>,
+    @Expose val items: Map<NeuInternalName, DragonProfitTrackerItemDataJson>,
+)
+
+data class DragonProfitTrackerItemDataJson(
+    @Expose val weight: Int,
 )
