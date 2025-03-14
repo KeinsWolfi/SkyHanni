@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LorenzUtils
 import at.hannibal2.skyhanni.utils.LorenzUtils.formatPercentage
 import at.hannibal2.skyhanni.utils.LorenzUtils.isInIsland
+import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -209,6 +210,7 @@ object DragonFeatures {
             dragonSpawned = true
 
             currentDragonType = DragonType.valueOf(this.group("Dragon").uppercase())
+            ChatUtils.debug("Dragon Type: $currentDragonType")
 
             if (config.superiorNotify && this.group("Dragon") == "Superior") {
                 LorenzUtils.sendTitle("§6Superior Dragon Spawned!", 1.5.seconds)
@@ -261,8 +263,19 @@ object DragonFeatures {
                                 yourEyes, endPlace, endTopDamage, endDamage,
                             )
 
-                            DragonProfitTracker.addDragonKill(currentDragonType ?: DragonType.UNKNOWN)
+                            if (endDamage > 0) {
+                                DragonProfitTracker.addDragonKill(currentDragonType ?: DragonType.UNKNOWN)
+                                DragonProfitTracker.addDragonLoot(
+                                    currentDragonType ?: DragonType.UNKNOWN,
+                                    "ESSENCE_DRAGON".toInternalName(),
+                                    if (currentDragonType == DragonType.SUPERIOR) 10 else 5
+                                )
+                            }
                             DragonProfitTracker.lastDragonPlacement = endPlace
+                            ChatUtils.debug(
+                                "Dragon type: $currentDragonType," +
+                                    " placement: ${DragonProfitTracker.lastDragonPlacement}"
+                            )
 
                             printWeight(weight)
 
