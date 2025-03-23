@@ -80,6 +80,7 @@ import kotlin.math.round
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
+@Suppress("LargeClass")
 object GardenVisitorFeatures {
 
     private val config get() = VisitorApi.config
@@ -303,47 +304,71 @@ object GardenVisitorFeatures {
         }
     }
 
-    private fun MutableList<List<Any>>.drawVisitors(
+    private fun drawVisitors(
         newVisitors: List<String>,
         shoppingList: Map<NeuInternalName, Int>,
-    ) {
-        if (newVisitors.isEmpty()) return
+    ) = buildList {
+        if (newVisitors.isEmpty()) {
+            add(Renderable.singeltonString("§7No new visitors"))
+        }
         if (shoppingList.isNotEmpty()) {
-            addAsSingletonList("")
+            add(Renderable.singeltonString(""))
         }
         val amount = newVisitors.size
         val visitorLabel = if (amount == 1) "visitor" else "visitors"
-        addAsSingletonList("§e$amount §7new $visitorLabel:")
+        add(
+            Renderable.clickable(
+                "§e$amount §7new $visitorLabel:",
+                tips = listOf(
+                    "§7Click to teleport to the barn.",
+                ),
+                onLeftClick = {
+                    HypixelCommands.teleportToPlot("barn")
+                }
+            )
+        )
         for (visitor in newVisitors) {
             drawVisitor(visitor)
         }
     }
 
-    private fun MutableList<List<Any>>.drawVisitor(visitor: String) {
+    private fun drawVisitor(visitor: String) = buildList {
         val displayName = GardenVisitorColorNames.getColoredName(visitor)
 
-        val list = mutableListOf<Any>()
-        list.add(" §7- $displayName")
-
-        if (config.shoppingList.itemPreview) {
-            val items = GardenVisitorColorNames.visitorItems[visitor.removeColor()]
-            if (items == null) {
-                val text = "Visitor '$visitor' has no items in repo!"
-                logger.log(text)
-                ChatUtils.debug(text)
-                list.add(" §7(§c?§7)")
-                return
-            }
-            if (items.isEmpty()) {
-                list.add(" §7(§fAny§7)")
-            } else {
-                for (item in items) {
-                    list.add(NeuInternalName.fromItemName(item).getItemStack())
+        val text = buildString {
+            append(" §7- $displayName")
+            if (config.shoppingList.itemPreview) {
+                val items = GardenVisitorColorNames.visitorItems[visitor.removeColor()]
+                if (items == null) {
+                    val debugText = "Visitor '$visitor' has no items in repo!"
+                    logger.log(debugText)
+                    ChatUtils.debug(debugText)
+                    append(" §7(§c?§7)")
+                } else {
+                    if (items.isEmpty()) {
+                        append(" §7(§fAny§7)")
+                    } else {
+                        for (item in items) {
+                            append(NeuInternalName.fromItemName(item).getItemStack())
+                        }
+                    }
                 }
             }
         }
 
-        add(list)
+        add(
+            Renderable.clickable(
+                text,
+                tips = listOf(
+                    "$displayName §7is visiting your garden!",
+                    "",
+                    "§7Click to teleport to the barn.",
+                ),
+                onLeftClick = {
+                    HypixelCommands.teleportToPlot("barn")
+                }
+            )
+        )
     }
 
     @HandleEvent
