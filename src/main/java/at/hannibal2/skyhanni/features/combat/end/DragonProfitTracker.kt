@@ -11,15 +11,17 @@ import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.CollectionUtils.addOrPut
-import at.hannibal2.skyhanni.utils.CollectionUtils.addSearchString
-import at.hannibal2.skyhanni.utils.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
-import at.hannibal2.skyhanni.utils.ItemUtils.itemName
+import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
+import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzUtils
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
+import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
+import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
+import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
+import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addSearchString
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
@@ -55,7 +57,7 @@ object DragonProfitTracker {
 
         override fun getDescription(bucket: DragonType?, timesGained: Long): List<String> {
             val percentage = timesGained.toDouble() / getTotalDragonCount()
-            val dropRate = LorenzUtils.formatPercentage(percentage.coerceAtMost(1.0))
+            val dropRate = percentage.coerceAtMost(1.0).formatPercentage()
             return listOf(
                 "§7Dropped §e${timesGained.addSeparators()} §7times.",
                 "§7Your drop rate: §c$dropRate.",
@@ -96,10 +98,10 @@ object DragonProfitTracker {
             )
         }
 
-        val colorCode = bucketData.selectedBucket?.colorCode ?: "§b"
+        val colorCode = bucketData.selectedBucket?.color ?: LorenzColor.AQUA
         val displayName = bucketData.selectedBucket?.displayName ?: "Total Dragon"
         val killAmount = bucketData.getTotalDragonCount()
-        val dragonString = "$colorCode$displayName §r§bkills: $killAmount"
+        val dragonString = "${colorCode.getChatColor()}$displayName §r§bkills: $killAmount"
         add(
             Renderable.string(dragonString).toSearchable()
         )
@@ -147,6 +149,7 @@ object DragonProfitTracker {
     }
 
     fun addDragonLootFromList(type: DragonType, items: List<Pair<NeuInternalName, Int>>) {
+        if (lastPlaced == 0 && !config.countLeechedDragons) return
         items.forEach { (item, amount) -> addDragonLoot(type, item, amount) }
 
         val lootMap = mutableMapOf<String, Double>()
@@ -154,7 +157,7 @@ object DragonProfitTracker {
         items.forEach { (internalName, amount) ->
             internalName.getPrice().takeIf { price: Double -> price != -1.0 }?.let { pricePer: Double ->
                 val profit: Double = amount * pricePer
-                val nameFormat = internalName.itemName
+                val nameFormat = internalName.repoItemName
                 val text = "§eFound $nameFormat §8${amount}x §7(§6${profit.shortFormat()}§7)"
                 lootMap.addOrPut(text, profit)
                 totalProfit += profit
@@ -171,7 +174,7 @@ object DragonProfitTracker {
         val profitPrefix = if (totalProfit < 0) "§c" else "§6"
         val totalMessage = "Profit for Dragon§e: $profitPrefix${totalProfit.shortFormat()}"
 
-        hover.add("§cUsed §5Summoning Eye§7: §c-${eyePrice?.times(lastPlaced)?.shortFormat()}")
+        hover.add("§cPlaced §5Summoning Eye§7: §c-${eyePrice?.times(lastPlaced)?.shortFormat()}")
         hover.add("§e$totalMessage")
 
         ChatUtils.hoverableChat(totalMessage, hover)

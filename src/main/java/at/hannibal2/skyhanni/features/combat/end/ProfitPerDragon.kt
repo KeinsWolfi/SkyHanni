@@ -4,11 +4,11 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import net.minecraft.entity.item.EntityArmorStand
 import java.util.UUID
 import kotlin.math.floor
@@ -16,6 +16,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object ProfitPerDragon {
+    var finishedLoot = true
+
     private val scannedLootUUIDs = mutableSetOf<UUID>()
     private val dragonLoot = mutableMapOf<NeuInternalName, Int>()
 
@@ -48,47 +50,55 @@ object ProfitPerDragon {
             }
         }
 
-        // Time for all armor stands to spawn
-        if (dragonLoot.isNotEmpty()) {
+        if (dragonLoot.isNotEmpty() && DragonFeatures.weight >= 290) {
             var weight = DragonFeatures.weight
             ChatUtils.debug("Weight: $weight")
 
             weight -= DragonProfitTracker.allowedItems[dragonLoot.keys.first()]?.weight ?: 0
             ChatUtils.debug("Weight: $weight after main drop (${dragonLoot.keys.first()})")
 
-            val dragType = DragonProfitTracker.lastDragonKill ?: DragonType.UNKNOWN
-
-            val fragmentWeight = 22
-            val fragAmount = floor(weight / fragmentWeight)
-            weight -= fragAmount * fragmentWeight
-            ChatUtils.debug("Weight: $weight after frags(${fragAmount.toInt()} frags)")
-
-            dragonLoot.addOrPut("${dragType}_FRAGMENT".toInternalName(), fragAmount.toInt())
-
-            val enchantedEnderPearlWeight = 15
-            var enchantedEnderPearlAmount = floor(weight / enchantedEnderPearlWeight)
-            weight -= enchantedEnderPearlAmount * enchantedEnderPearlWeight
-            enchantedEnderPearlAmount += enchantedEnderPearlMap(DragonProfitTracker.lastDragonPlacement ?: 0)
-
-            ChatUtils.debug(
-                "Weight: $weight after enchanted ender pearls (${enchantedEnderPearlAmount.toInt()} epearls)"
-            )
-
-            dragonLoot.addOrPut("ENCHANTED_ENDER_PEARL".toInternalName(), enchantedEnderPearlAmount.toInt())
-
-            val enderPearlWeight = 5
-            var enderPearlAmount = floor(weight / enderPearlWeight)
-            weight -= enderPearlAmount * enderPearlWeight
-            enderPearlAmount += enderPearlMap(DragonProfitTracker.lastDragonPlacement ?: 0)
-
-            ChatUtils.debug("Weight: $weight after ender pearls (${enderPearlAmount.toInt()} pearls)")
-
-            dragonLoot.addOrPut("ENDER_PEARL".toInternalName(), enderPearlAmount.toInt())
-
-            DragonProfitTracker.addDragonLootFromList(dragType, dragonLoot.toList())
-
-            dragonLoot.clear()
+            calculateNonUniqueLoot(weight)
+        } else if (DragonFeatures.weight < 290) {
+            ChatUtils.debug("Weight: ${DragonFeatures.weight} < 290")
+            calculateNonUniqueLoot(DragonFeatures.weight)
         }
+    }
+
+    private fun calculateNonUniqueLoot(weightIn: Double) {
+        var weight = weightIn
+        val dragType = DragonProfitTracker.lastDragonKill ?: DragonType.UNKNOWN
+
+        val fragmentWeight = 22
+        val fragAmount = floor(weight / fragmentWeight)
+        weight -= fragAmount * fragmentWeight
+        ChatUtils.debug("Weight: $weight after frags(${fragAmount.toInt()} frags)")
+
+        dragonLoot.addOrPut("${dragType}_FRAGMENT".toInternalName(), fragAmount.toInt())
+
+        val enchantedEnderPearlWeight = 15
+        var enchantedEnderPearlAmount = floor(weight / enchantedEnderPearlWeight)
+        weight -= enchantedEnderPearlAmount * enchantedEnderPearlWeight
+        enchantedEnderPearlAmount += enchantedEnderPearlMap(DragonProfitTracker.lastDragonPlacement ?: 0)
+
+        ChatUtils.debug(
+            "Weight: $weight after enchanted ender pearls (${enchantedEnderPearlAmount.toInt()} epearls)"
+        )
+
+        dragonLoot.addOrPut("ENCHANTED_ENDER_PEARL".toInternalName(), enchantedEnderPearlAmount.toInt())
+
+        val enderPearlWeight = 5
+        var enderPearlAmount = floor(weight / enderPearlWeight)
+        weight -= enderPearlAmount * enderPearlWeight
+        enderPearlAmount += enderPearlMap(DragonProfitTracker.lastDragonPlacement ?: 0)
+
+        ChatUtils.debug("Weight: $weight after ender pearls (${enderPearlAmount.toInt()} pearls)")
+
+        dragonLoot.addOrPut("ENDER_PEARL".toInternalName(), enderPearlAmount.toInt())
+
+        DragonProfitTracker.addDragonLootFromList(dragType, dragonLoot.toList())
+
+        dragonLoot.clear()
+        finishedLoot = true
     }
 
     fun reset() {
@@ -96,6 +106,7 @@ object ProfitPerDragon {
         dragonLoot.clear()
     }
 
+    // MAP: PLACEMENT -> Standard Ender Pearl Amount
     private fun enderPearlMap(place: Int) = when (place) {
         1 -> 30
         2 -> 25
@@ -108,6 +119,7 @@ object ProfitPerDragon {
         else -> 5
     }
 
+    // MAP: PLACEMENT -> Standard Enchanted Ender Pearl Amount
     private fun enchantedEnderPearlMap(place: Int) = when (place) {
         1 -> 7
         2 -> 6
@@ -123,7 +135,7 @@ object ProfitPerDragon {
 
     @HandleEvent
     fun onTick(e: SkyHanniTickEvent) {
-        if (lastScanned.passedSince() >= 1.seconds && !DragonFeatures.egg) {
+        if (lastScanned.passedSince() >= 1.seconds && !DragonFeatures.egg && !finishedLoot) {
             scanForLoot()
             lastScanned = SimpleTimeMark.now()
         }
