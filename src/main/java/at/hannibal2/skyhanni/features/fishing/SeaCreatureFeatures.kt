@@ -50,19 +50,11 @@ object SeaCreatureFeatures {
         if (DamageIndicatorConfig.BossCategory.SEA_CREATURES !in damageIndicatorConfig.bossesToShow) return
         if (seaCreaturesBosses.none { it.fullName.removeColor() == mob.name }) return
         mob.highlight(LorenzColor.GREEN.toColor())
-    }
 
-    @HandleEvent
-    fun onMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
-        if (!isEnabled()) return
-        val mob = event.mob
-        if (mob !in rareSeaCreatures) return
+        // Merged logic from onMobFirstSeen
         val entity = mob.baseEntity
         val shouldNotify = entity.entityId !in entityIds
         entityIds.addIfAbsent(entity.entityId)
-        val creature = SeaCreatureManager.allFishingMobs[mob.name] ?: return
-        if (!creature.rare) return
-
         if (lastRareCatch.passedSince() < 1.seconds) return
         if (mob.name == "Water Hydra" && entity.health == (entity.baseMaxHealth.toFloat() / 2)) return
         if (config.alertOtherCatches && shouldNotify) {
