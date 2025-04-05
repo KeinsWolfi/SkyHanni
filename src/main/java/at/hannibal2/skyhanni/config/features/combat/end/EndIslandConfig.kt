@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.config.features.combat.end
 
 import at.hannibal2.skyhanni.config.FeatureToggle
-import at.hannibal2.skyhanni.config.features.misc.DraconicSacrificeTrackerConfig
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
@@ -14,11 +13,6 @@ class EndIslandConfig {
     var draconicSacrificeTracker: DraconicSacrificeTrackerConfig = DraconicSacrificeTrackerConfig()
 
     @Expose
-    @ConfigOption(name = "Dragon Profit Tracker", desc = "")
-    @Accordion
-    var dragonProfitTracker: DragonProfitTrackerConfig = DragonProfitTrackerConfig()
-
-    @Expose
     @ConfigOption(name = "Dragon Features", desc = "")
     @Accordion
     var dragon: DragonConfig = DragonConfig()
@@ -28,4 +22,9 @@ class EndIslandConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var endstoneProtectorChat: Boolean = true
+
+    @Expose
+    @ConfigOption(name = "Ender Node Tracker", desc = "")
+    @Accordion
+    var enderNodeTracker: EnderNodeConfig = EnderNodeConfig()
 }

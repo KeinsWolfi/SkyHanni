@@ -3,11 +3,17 @@ package at.hannibal2.skyhanni.config.features.combat.end
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.core.config.Position
 import com.google.gson.annotations.Expose
+import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class DragonConfig {
+    @Expose
+    @ConfigOption(name = "Dragon Profit Tracker", desc = "")
+    @Accordion
+    var dragonProfitTracker: DragonProfitTrackerConfig = DragonProfitTrackerConfig()
+
     @Expose
     @ConfigOption(name = "Superior Notification", desc = "Notifies you with an Title that an superior dragon spawned.")
     @ConfigEditorBoolean
@@ -26,7 +32,7 @@ class DragonConfig {
 
     @Expose
     @ConfigLink(owner = DragonConfig::class, field = "display")
-    var displayPosition: Position = Position(120, 40, false, true)
+    var displayPosition: Position = Position(120, 40)
 
     @Expose
     @ConfigOption(name = "Weight Message", desc = "Shows your dragon weight in chat after the dragon died.")
@@ -35,8 +41,8 @@ class DragonConfig {
     var chat: Boolean = true
 
     @Expose
-    @ConfigOption(name = "Skyhanni Tag", desc = "Displays the Skyhanni tag in the dragon weight message.")
+    @ConfigOption(name = "Skyhanni Prefix", desc = "Displays the Skyhanni prefix in the dragon weight message.")
     @ConfigEditorBoolean
     @FeatureToggle
-    var skyhanniMessageTag: Boolean = true
+    var skyhanniMessagePrefix: Boolean = true
 }

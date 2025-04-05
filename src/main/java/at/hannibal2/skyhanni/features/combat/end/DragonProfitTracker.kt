@@ -16,6 +16,7 @@ import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzUtils
 import at.hannibal2.skyhanni.utils.NeuInternalName
+import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
@@ -32,10 +33,10 @@ import java.util.EnumMap
 
 @SkyHanniModule
 object DragonProfitTracker {
-    private val config get() = SkyHanniMod.feature.combat.endIsland.dragonProfitTracker
+    private val config get() = SkyHanniMod.feature.combat.endIsland.dragon.dragonProfitTracker
 
-    var dragonType: String? = null
     private var lastPlaced: Int = 0
+    private val SUMMONING_EYE = "SUMMONING_EYE".toInternalName()
 
     private val tracker = SkyHanniBucketedItemTracker(
         "Dragon Profit Tracker",
@@ -87,23 +88,20 @@ object DragonProfitTracker {
 
         var profit = tracker.drawItems(bucketData, { true }, this)
 
-        var totalEyePrice = 0.0
-        val eyePrice = NeuInternalName.fromItemNameOrNull("Summoning Eye")?.getPrice()
-        if (eyePrice != null) {
-            totalEyePrice = eyePrice * bucketData.eyesPlaced
-            profit -= totalEyePrice
-            val eyeFormat = "§7${bucketData.eyesPlaced}x §5Summoning Eye §c-${totalEyePrice.shortFormat()}"
-            add(
-                Renderable.string(eyeFormat).toSearchable()
-            )
-        }
+        val eyePrice = SUMMONING_EYE.getPrice()
+        val totalEyePrice = eyePrice * bucketData.eyesPlaced
+        profit -= totalEyePrice
+        val eyeFormat = "§7${bucketData.eyesPlaced}x §5Summoning Eye §c-${totalEyePrice.shortFormat()}"
+        add(
+            Renderable.string(eyeFormat).toSearchable("Summoning Eye"),
+        )
 
         val colorCode = bucketData.selectedBucket?.color ?: LorenzColor.AQUA
         val displayName = bucketData.selectedBucket?.displayName ?: "Total Dragon"
         val killAmount = bucketData.getTotalDragonCount()
         val dragonString = "${colorCode.getChatColor()}$displayName §r§bkills: $killAmount"
         add(
-            Renderable.string(dragonString).toSearchable()
+            Renderable.string(dragonString).toSearchable(),
         )
 
         add(tracker.addTotalProfit(profit, bucketData.getTotalDragonCount(), "Dragon"))
@@ -116,13 +114,13 @@ object DragonProfitTracker {
     var lastDragonPlacement: Int? = null
 
     @HandleEvent
-    fun onRepoReload(e: RepositoryReloadEvent) {
-        allowedItems = e.getConstant<DragonProfitTrackerItemsJson>("DragonProfitTrackerItems").items
+    fun onRepoReload(event: RepositoryReloadEvent) {
+        allowedItems = event.getConstant<DragonProfitTrackerItemsJson>("DragonProfitTrackerItems").items
     }
 
     @HandleEvent
     fun onItemAdd(event: ItemAddEvent) {
-        if (!config.enabled || event.source != ItemAddManager.Source.COMMAND) return
+        if (!isEnabled() || event.source != ItemAddManager.Source.COMMAND) return
         with(tracker) { event.addItemFromEvent() }
         ChatUtils.debug("Added item to tracker: ${event.internalName} (amount: ${event.amount})")
     }

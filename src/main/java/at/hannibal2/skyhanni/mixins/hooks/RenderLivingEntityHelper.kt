@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.mixins.hooks
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
 import net.minecraft.client.renderer.GlStateManager
@@ -22,7 +21,7 @@ object RenderLivingEntityHelper {
     private val entityChamsMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
     @HandleEvent
-    fun onWorldChange(event: WorldChangeEvent) {
+    fun onWorldChange() {
         entityColorMap.clear()
         entityColorCondition.clear()
 
