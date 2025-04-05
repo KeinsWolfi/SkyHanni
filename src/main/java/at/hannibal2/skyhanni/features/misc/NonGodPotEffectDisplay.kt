@@ -22,7 +22,7 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.LorenzUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
-import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
+import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SoundUtils.playPlingSound
 import at.hannibal2.skyhanni.utils.TimeUnit
 import at.hannibal2.skyhanni.utils.TimeUtils
@@ -30,6 +30,7 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.TimeUtils.timerColor
 import at.hannibal2.skyhanni.utils.Timer
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
+import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import kotlin.time.Duration.Companion.hours
@@ -44,7 +45,7 @@ object NonGodPotEffectDisplay {
     private val config get() = SkyHanniMod.feature.misc.potionEffect
     private var checkFooter = false
     private val effectDuration = mutableMapOf<NonGodPotEffect, Timer>()
-    private var display = emptyList<String>()
+    private var display = emptyList<Renderable>()
 
     // TODO move the whole list into the repo
     enum class NonGodPotEffect(
@@ -177,11 +178,10 @@ object NonGodPotEffectDisplay {
             checkFooter = true
         }
 
-        display = drawDisplay()
+        display = newDrawDisplay()
     }
 
-    private fun drawDisplay(): MutableList<String> {
-        val newDisplay = mutableListOf<String>()
+    private fun newDrawDisplay() = buildList {
         for ((effect, time) in effectDuration.sorted()) {
             if (time.ended) continue
             if (effect == NonGodPotEffect.INVISIBILITY) continue
@@ -193,15 +193,30 @@ object NonGodPotEffectDisplay {
             val color = remaining.timerColor()
 
             val displayName = effect.tabListName
-            newDisplay.add("$displayName $color$format")
+            add(
+                Renderable.clickable(
+                    "$displayName $color$format",
+                    tips = listOf("§eClick to open the effects inventory!",),
+                    onLeftClick = {
+                        ChatUtils.sendMessageToServer("/effects")
+                    },
+                )
+            )
         }
         val diff = totalEffectsCount - effectDuration.size
         if (diff > 0) {
-            newDisplay.add("§eOpen the /effects inventory")
-            newDisplay.add("§eto show the missing $diff effects!")
+            add(
+                Renderable.clickable(
+                    "§eOpen the /effects inventory\n" +
+                        "§eto show the missing $diff effects!",
+                    tips = listOf("§eClick to open the effects inventory!"),
+                    onLeftClick = {
+                        ChatUtils.sendMessageToServer("/effects")
+                    }
+                )
+            )
             checkFooter = true
         }
-        return newDisplay
     }
 
     @HandleEvent
@@ -315,7 +330,7 @@ object NonGodPotEffectDisplay {
         if (!isEnabled() || !config.nonGodPotEffectDisplay) return
         if (RiftApi.inRift()) return
 
-        config.nonGodPotEffectPos.renderStrings(
+        config.nonGodPotEffectPos.renderRenderables(
             display,
             extraSpace = 3,
             posLabel = "Non God Pot Effects",
