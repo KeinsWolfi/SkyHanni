@@ -20,11 +20,14 @@ object CopyItemCommand {
         copyItemToClipboard(itemStack)
     }
 
-    fun copyItemToClipboard(itemStack: ItemStack) {
+    fun copyItemToClipboard(itemStack: ItemStack, slot: Int? = null) {
         val resultList = mutableListOf<String>()
         resultList.add(itemStack.getInternalName().toString())
         resultList.add("display name: '" + itemStack.displayName.toString() + "'")
         resultList.add("minecraft id: '" + itemStack.getMinecraftId() + "'")
+        if (slot != null) {
+            resultList.add("slot: $slot")
+        }
         resultList.add("lore:")
         for (line in itemStack.getLore()) {
             resultList.add(" '$line'")

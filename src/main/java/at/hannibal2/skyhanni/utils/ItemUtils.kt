@@ -665,7 +665,7 @@ object ItemUtils {
         return name
     }
 
-    fun ItemStack.loreCosts(): MutableList<NeuInternalName> {
+    fun ItemStack.loreCosts(coins: Boolean = false): MutableList<NeuInternalName> {
         var found = false
         val list = mutableListOf<NeuInternalName>()
         for (lines in getLore()) {
@@ -676,6 +676,15 @@ object ItemUtils {
 
             if (!found) continue
             if (lines.isEmpty()) return list
+
+            if (coins) {
+                if (lines.endsWith("Coins")) {
+                    val coinAmount = lines.substringBefore(" Coins").formatInt()
+                    if (coinAmount > 0) {
+                        list.add(NeuInternalName.SKYBLOCK_COIN)
+                    }
+                }
+            }
 
             NeuInternalName.fromItemNameOrNull(lines)?.let {
                 list.add(it)

@@ -57,7 +57,7 @@ object TestExportTools {
         if (!config.copyItemDataCompressed.isKeyHeld() && !config.copyItemData.isKeyHeld()) return
         val stack = event.guiContainer.slotUnderMouse?.stack ?: return
         if (config.copyItemData.isKeyHeld()) {
-            copyItemToClipboard(stack)
+            copyItemToClipboard(stack, event.guiContainer.slotUnderMouse?.slotIndex)
             return
         }
         val json = toJson(Item, stack)
