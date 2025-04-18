@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.features.commands.OpenLastStorage
 import at.hannibal2.skyhanni.features.dungeon.CroesusChestTracker.OpenedState
 import at.hannibal2.skyhanni.features.dungeon.CroesusChestTracker.generateMaxChestAsList
 import at.hannibal2.skyhanni.features.dungeon.DungeonFloor
+import at.hannibal2.skyhanni.features.dungeon.DungeonProfitTracker
 import at.hannibal2.skyhanni.features.event.carnival.CarnivalGoal
 import at.hannibal2.skyhanni.features.event.diana.DianaProfitTracker
 import at.hannibal2.skyhanni.features.event.diana.MythologicalCreatureTracker
@@ -135,6 +136,9 @@ class ProfileSpecificStorage {
 
     @Expose
     var dragonProfitTracker: DragonProfitTracker.BucketData = DragonProfitTracker.BucketData()
+
+    @Expose
+    var dungeonProfitTracker: DungeonProfitTracker.BucketData = DungeonProfitTracker.BucketData()
 
     // - event
     // -- carnival

@@ -1,17 +1,29 @@
 package at.hannibal2.skyhanni.features.dungeon
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.TestExportTools
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.InventoryUtils.getTitle
+import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
+import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.loreCosts
-import at.hannibal2.skyhanni.utils.OSUtils
+import at.hannibal2.skyhanni.utils.LorenzColor
+import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
+import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
+import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
+import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addSearchString
+import at.hannibal2.skyhanni.utils.renderables.Renderable
+import at.hannibal2.skyhanni.utils.renderables.Searchable
+import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.item.ItemStack
+import at.hannibal2.skyhanni.utils.tracker.BucketedItemTrackerData
+import at.hannibal2.skyhanni.utils.tracker.SkyHanniBucketedItemTracker
+import com.google.gson.annotations.Expose
+import java.util.EnumMap
 
 @SkyHanniModule
 object DungeonProfitTracker {
@@ -31,46 +43,79 @@ object DungeonProfitTracker {
         "(?<chestType>Wood|Gold|Emerald|Diamond|Obsidian|Bedrock) Chest",
     )
 
+    /**
+     * REGEX-TEST: §62,000,000 Coins
+     * REGEX-TEST: §625,000 Coins
+     */
+    private val coinPattern by repoGroup.pattern(
+        "chest.cost",
+        "§6(?<cost>[\\d,]+) Coins",
+    )
+
     //  §r§b§lDIAMOND CHEST REWARDS
     //    §r§5Hot Potato Book
-    //  §r§b§lDIAMOND CHEST REWARDS
 
-    // internalName:NONE
-    // display name: '§aOpen Reward Chest'
-    // minecraft id: 'minecraft:chest'
-    // lore:
-    //  '§7Purchase this chest to receive the'
-    //  '§7rewards above. You can only open'
-    //  '§7one chest per Dungeons run -'
-    //  '§7choose wisely!'
-    //  ''
-    //  '§7Cost'
-    //  '§625,000 Coins'
-    //  '§9Dungeon Chest Key'
-    //  ''
-    //  '§7§cNOTE: Coins are withdrawn from your'
-    //  '§cbank if you don't have enough in'
-    //  '§cyour purse.'
-    //
-    // getTagCompound
-    //   display:
-    //     Name: "§aOpen Reward Chest"
+    private val tracker = SkyHanniBucketedItemTracker(
+        "Dungeon Profit Tracker",
+        { BucketData() },
+        { it.dungeonProfitTracker },
+        { drawDisplay(it) },
+    )
 
-    // internalName:NONE
-    // display name: '§aOpen Reward Chest'
-    // minecraft id: 'minecraft:chest'
-    // lore:
-    //  '§7Purchase this chest to receive the'
-    //  '§7rewards above. You can only open'
-    //  '§7one chest per Dungeons run -'
-    //  '§7choose wisely!'
-    //  ''
-    //  '§7Cost'
-    //  '§9Dungeon Chest Key'
-    //
-    // getTagCompound
-    //   display:
-    //     Name: "§aOpen Reward Chest"
+    class BucketData : BucketedItemTrackerData<DungeonFloor>() {
+        override fun getCoinName(bucket: DungeonFloor?, item: TrackedItem) = "<no coins>"
+        override fun getCoinDescription(bucket: DungeonFloor?, item: TrackedItem): List<String> = listOf("<no coins>")
+
+        override fun DungeonFloor.isBucketSelectable(): Boolean = true
+
+        override fun resetItems() {
+            floorsDone.clear()
+            coinsSpent.clear()
+        }
+
+        override fun getDescription(bucket: DungeonFloor?, timesGained: Long): List<String> {
+            val floorsDoneNoneNull = floorsDone[bucket] ?: 0L
+            val percentage = timesGained.toDouble() / floorsDoneNoneNull
+            val dropRate = percentage.coerceAtMost(1.0).formatPercentage()
+            return listOf(
+                "§7Dropped §e${timesGained.addSeparators()} §7times.",
+                "§7Your drop rate: §c$dropRate.",
+            )
+        }
+
+        fun getFloorsDone(): Long {
+            return if (selectedBucket == null || selectedBucket !in DungeonFloor.values()) {
+                floorsDone.values.sum()
+            } else {
+                floorsDone[selectedBucket] ?: 0
+            }
+        }
+
+        @Expose
+        var floorsDone: MutableMap<DungeonFloor, Long> = EnumMap(DungeonFloor::class.java)
+
+        @Expose
+        var coinsSpent: MutableMap<DungeonFloor, Long> = EnumMap(DungeonFloor::class.java)
+    }
+
+    private fun drawDisplay(bucketData: BucketData): List<Searchable> = buildList {
+        addSearchString("§b§lDragon Profit Tracker")
+        tracker.addBucketSelector(this, bucketData, "Dungeon Floor")
+
+        val profit = tracker.drawItems(bucketData, { true }, this)
+
+        val colorCode = LorenzColor.DARK_RED
+        val displayName = bucketData.selectedBucket?.name ?: "Total Dungeons"
+        val dungeonsDone = bucketData.getFloorsDone()
+        val dungeonString = "${colorCode.getChatColor()}$displayName §r§4Done: $dungeonsDone"
+        add(
+            Renderable.string(dungeonString).toSearchable(),
+        )
+
+        add(tracker.addTotalProfit(profit, bucketData.getFloorsDone(), "Dragon"))
+
+        tracker.addPriceFromButton(this)
+    }
 
     @HandleEvent
     fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
@@ -81,7 +126,18 @@ object DungeonProfitTracker {
             val chestType = group("chestType")
             val openChestItem = inventoryItems[31] ?: return
 
-            val chestCost = openChestItem.loreCosts()
+            var chestCoinCost = 0
+
+            for (line in openChestItem.getLore()) {
+                coinPattern.matchMatcher(line) {
+                    val cost = group("cost")
+                    chestCoinCost = cost.formatInt()
+                }
+            }
+
+            val chestCostOther = openChestItem.loreCosts()
+
+            val chestCost = chestCoinCost + chestCostOther.sumOf { it.getPrice() }
 
             ChatUtils.debug(
                 "Dungeon Chest Type: $chestType \n" +
@@ -90,41 +146,11 @@ object DungeonProfitTracker {
         }
     }
 
-    // internalName:NONE
-    // display name: '§aOpen Reward Chest'
-    // minecraft id: 'minecraft:chest'
-    // slot: 31
-    // lore:
-    //  '§7Purchase this chest to receive the'
-    //  '§7rewards above. You can only open'
-    //  '§7one chest per Dungeons run -'
-    //  '§7choose wisely!'
-    //  ''
-    //  '§7Cost'
-    //  '§aFREE'
-    //
-    // getTagCompound
-    //   display:
-    //     Name: "§aOpen Reward Chest"
+    @HandleEvent
+    fun onSloClicked(event: GuiContainerEvent.SlotClickEvent) {
+        if (!chestInventoryNamePattern.matches(event.gui.getTitle()))
+        if (event.slotId != 31) return
 
-    // internalName:NONE
-    // display name: '§aOpen Reward Chest'
-    // minecraft id: 'minecraft:chest'
-    // slot: 31
-    // lore:
-    //  '§7Purchase this chest to receive the'
-    //  '§7rewards above. You can only open'
-    //  '§7one chest per Dungeons run -'
-    //  '§7choose wisely!'
-    //  ''
-    //  '§7Cost'
-    //  '§62,000,000 Coins'
-    //  ''
-    //  '§7§cNOTE: Coins are withdrawn from your'
-    //  '§cbank if you don't have enough in'
-    //  '§cyour purse.'
-    //
-    // getTagCompound
-    //   display:
-    //     Name: "§aOpen Reward Chest"
+
+    }
 }
