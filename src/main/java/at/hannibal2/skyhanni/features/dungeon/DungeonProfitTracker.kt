@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.dungeon
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
+import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.TestExportTools
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -126,31 +127,4 @@ object DungeonProfitTracker {
     // getTagCompound
     //   display:
     //     Name: "§aOpen Reward Chest"
-
-    // Title:
-    // §e§lSKYBLOCK§B§L CO-OP
-    //
-    // '§704/18/25 §8m6CK 102,66'
-    // '  '
-    // ' Early Winter 31st'
-    // ' §711:20am'
-    // ' §7⏣ §cThe Catacombs §7(E)'
-    // '      '
-    // 'Keys: §c■ §c✗ §8■ §a0x'
-    // 'Time Elapsed: §a07s'
-    // 'Cleared: §c0% §8(0)'
-    // '          '
-    // '§3§lSolo'
-    // '            '
-    // '§ewww.hypixel.net'
-
-    // §9§m-----------------------------
-    // §r§b[MVP§r§f+§r§b] PlasticEating§r§f §r§eentered §r§aThe Catacombs§r§e, §r§eEntrance§r§e!
-    // §r§9§m-----------------------------
-
-    private val floorEnteredPattern by repoGroup.pattern(
-        "floor.entered",
-        "(?<playerName>.+) entered (?<floorName>.+)\\s*",
-    )
-
 }
