@@ -23,12 +23,15 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.compat.getStandHelmet
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 
 // TODO: Maybe implement automatic warp-in for chosen players if the user is not in a party.
 @SkyHanniModule
 object CorpseLocator {
     private val config get() = SkyHanniMod.feature.mining.glaciteMineshaft.corpseLocator
+
+    val corpses: List<Entity> = emptyList()
 
     /**
      * REGEX-TEST: x: -164, y: 8, z: -154 | (Lapis Corpse)
@@ -64,6 +67,7 @@ object CorpseLocator {
                 )
 
                 RenderLivingEntityHelper.setEntityChams(entity) { true }
+                RenderLivingEntityHelper.setEntityEsp(entity) { true }
             }
     }
 
