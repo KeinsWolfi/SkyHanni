@@ -25,6 +25,8 @@ object RenderLivingEntityHelper {
     private val entityChamsMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
     private val entityEspMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
+    private val chromaEntityMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
+
     private const val CHROMA_COLOR = "249:255:255:85:85"
 
     @HandleEvent
@@ -36,6 +38,8 @@ object RenderLivingEntityHelper {
 
         entityChamsMap.clear()
         entityEspMap.clear()
+
+        chromaEntityMap.clear()
     }
 
     fun <T : EntityLivingBase> removeEntityColor(entity: T) {
@@ -65,6 +69,10 @@ object RenderLivingEntityHelper {
         setEntityColorWithNoHurtTime(entity, color.rgb, condition)
     }
 
+    fun <T : EntityLivingBase> setEntityColorWithNoHurtTimeChroma(entity: T, condition: () -> Boolean) {
+        chromaEntityMap[entity] = condition
+    }
+
     fun <T : EntityLivingBase> removeNoHurtTime(entity: T) {
         entityNoHurtTimeCondition.remove(entity)
     }
@@ -85,6 +93,12 @@ object RenderLivingEntityHelper {
     @JvmStatic
     fun <T : EntityLivingBase> internalSetColorMultiplier(entity: T): Int {
         if (!SkyHanniDebugsAndTests.globalRender) return 0
+        if (entityChamsMap.containsKey(entity)) {
+            val condition = entityChamsMap[entity]!!
+            if (condition.invoke()) {
+                return (255 shl 24) or (CHROMA_COLOR.toSpecialColorInt() and 0xFFFFFF)
+            }
+        }
         if (entityColorMap.containsKey(entity)) {
             val condition = entityColorCondition[entity]!!
             if (condition.invoke()) {
@@ -143,11 +157,6 @@ object RenderLivingEntityHelper {
                     2,
                     false
                 )
-                // event.drawWireframeBoundingBox(
-                //     entity.entityBoundingBox.expand(0.5),
-                //     ChromaColour.fromRGB(100, 100, 100, 2000, 100)
-                //         .getEffectiveColour(0f),
-                // )
             }
         }
     }

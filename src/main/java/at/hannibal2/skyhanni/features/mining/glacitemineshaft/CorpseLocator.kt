@@ -20,6 +20,7 @@ import at.hannibal2.skyhanni.utils.LorenzUtils.isInIsland
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
+import at.hannibal2.skyhanni.utils.SpecialColor.toSpecialColorInt
 import at.hannibal2.skyhanni.utils.compat.getStandHelmet
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
@@ -68,6 +69,11 @@ object CorpseLocator {
 
                 RenderLivingEntityHelper.setEntityChams(entity) { true }
                 RenderLivingEntityHelper.setEntityEsp(entity) { true }
+
+                RenderLivingEntityHelper.setEntityColorWithNoHurtTimeChroma(
+                    entity
+                ) { true }
+                ChatUtils.debug("Corpse color set.")
             }
     }
 
