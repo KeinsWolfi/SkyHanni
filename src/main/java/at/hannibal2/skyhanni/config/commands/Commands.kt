@@ -37,6 +37,7 @@ import at.hannibal2.skyhanni.features.misc.pathfind.NavigationHelper
 import at.hannibal2.skyhanni.features.misc.update.UpdateManager
 import at.hannibal2.skyhanni.features.misc.visualwords.VisualWordGui
 import at.hannibal2.skyhanni.features.rift.everywhere.PunchcardHighlight
+import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.DebugCommand
 import at.hannibal2.skyhanni.test.SkyHanniConfigSearchResetCommand
@@ -51,10 +52,13 @@ import at.hannibal2.skyhanni.test.command.CopyScoreboardCommand
 import at.hannibal2.skyhanni.test.command.TestChatCommand
 import at.hannibal2.skyhanni.utils.ExtendedChatColor
 import at.hannibal2.skyhanni.utils.ItemPriceUtils
+import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.TabListData
 import at.hannibal2.skyhanni.utils.chat.ChatClickActionManager
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPatternGui
+import net.minecraft.entity.EntityLivingBase
 
 @SkyHanniModule
 @Suppress("LargeClass", "LongMethod")
@@ -449,6 +453,25 @@ object Commands {
             description = "Manually saving the config"
             category = CommandCategory.DEVELOPER_TEST
             callback { SkyHanniMod.configManager.saveConfig(ConfigFileType.FEATURES, "manual-command") }
+        }
+        event.register("shchromachams") {
+            description = "Set all entities to chroma chams"
+            category = CommandCategory.DEVELOPER_TEST
+            callback {
+                val builder = StringBuilder()
+                for (entity in MinecraftCompat.localWorld.loadedEntityList) {
+                    if (entity is EntityLivingBase) {
+                        RenderLivingEntityHelper.setEntityChams(entity) { true }
+                        // RenderLivingEntityHelper.setEntityColorWithNoHurtTime(
+                        //     entity,
+                        //     "249:127:255:85:85".toSpecialColorInt(),
+                        // ) { true }
+                        RenderLivingEntityHelper.setEntityColorWithNoHurtTimeChroma(entity) { true }
+                        builder.append("Set ${entity.name} to chroma chams. (${entity.javaClass.simpleName}\n")
+                    }
+                }
+                OSUtils.copyToClipboard(builder.toString())
+            }
         }
     }
 
