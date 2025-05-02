@@ -2,8 +2,10 @@ package at.hannibal2.skyhanni.config.features.chroma
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.HasLegacyId
+import at.hannibal2.skyhanni.config.features.gui.ChamsChromaConfig
 import at.hannibal2.skyhanni.features.chroma.ChromaManager
 import com.google.gson.annotations.Expose
+import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
@@ -72,4 +74,9 @@ class ChromaConfig {
     )
     @ConfigEditorBoolean
     var ignoreChat: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Chams Chroma", desc = "")
+    @Accordion
+    var chamsChromaConfig: ChamsChromaConfig = ChamsChromaConfig()
 }

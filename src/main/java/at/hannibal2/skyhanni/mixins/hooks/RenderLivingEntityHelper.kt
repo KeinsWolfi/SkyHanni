@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.mixins.hooks
 
+import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -17,6 +18,8 @@ import java.awt.Color
 @SkyHanniModule
 object RenderLivingEntityHelper {
 
+    private val config get() = SkyHanniMod.feature.gui.chroma.chamsChromaConfig
+
     private val entityColorMap = mutableMapOf<EntityLivingBase, () -> Int>()
     private val entityColorCondition = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
@@ -26,7 +29,6 @@ object RenderLivingEntityHelper {
     private val entityEspMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
     private const val CHROMA_COLOR = "249:255:255:85:85"
-    private const val CHROMA_COLOR2 = "249:127:255:85:85"
 
     @HandleEvent
     fun onWorldChange() {
@@ -67,7 +69,7 @@ object RenderLivingEntityHelper {
     }
 
     fun <T : EntityLivingBase> setEntityColorWithNoHurtTimeChroma(entity: T, condition: () -> Boolean) {
-        entityColorMap[entity] = { CHROMA_COLOR2.toSpecialColorInt() }
+        entityColorMap[entity] = { config.color.toSpecialColorInt() }
         entityColorCondition[entity] = condition
         entityNoHurtTimeCondition[entity] = condition
     }

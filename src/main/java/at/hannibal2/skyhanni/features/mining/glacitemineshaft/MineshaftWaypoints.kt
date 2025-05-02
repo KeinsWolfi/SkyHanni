@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzUtils.isInIsland
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RenderUtils.drawDynamicText
-import at.hannibal2.skyhanni.utils.RenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.client.Minecraft
@@ -89,7 +88,7 @@ object MineshaftWaypoints {
                 (it.isCorpse && config.corpseLocator.enabled) || (!it.isCorpse && config.mineshaftWaypoints.enabled)
             }
             .forEach {
-                event.drawWaypointFilled(it.location, it.waypointType.color.toColor(), seeThroughBlocks = true)
+                // event.drawWaypointFilled(it.location, it.waypointType.color.toColor(), seeThroughBlocks = true)
                 event.drawDynamicText(it.location, "§e${it.waypointType.displayText}", 1.0)
             }
     }
