@@ -69,9 +69,11 @@ object CorpseLocator {
                 RenderLivingEntityHelper.setEntityChams(entity) { true }
                 RenderLivingEntityHelper.setEntityEsp(entity) { true }
 
-                RenderLivingEntityHelper.setEntityColorWithNoHurtTimeChroma(
-                    entity
-                ) { true }
+                if (corpseType == MineshaftWaypointType.VANGUARD) {
+                    RenderLivingEntityHelper.setEntityColorWithNoHurtTimeChroma(
+                        entity
+                    ) { true }
+                }
             }
     }
 

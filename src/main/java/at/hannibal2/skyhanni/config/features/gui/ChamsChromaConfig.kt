@@ -11,5 +11,5 @@ class ChamsChromaConfig {
         desc = "Color of the Chams Chroma.",
     )
     @ConfigEditorColour
-    var color: String = "249:127:255:85:85"
+    var color: String = "249:1:255:85:85"
 }
