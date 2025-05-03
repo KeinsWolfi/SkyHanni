@@ -24,7 +24,8 @@ class MineshaftPityDisplayConfig {
         MineshaftPityLine.COUNTER,
         MineshaftPityLine.CHANCE,
         MineshaftPityLine.NEEDED_TO_PITY,
-        MineshaftPityLine.TIME_SINCE_MINESHAFT
+        MineshaftPityLine.TIME_SINCE_MINESHAFT,
+        MineshaftPityLine.MINESHAFTS_SINCE_VANG,
     )
 
     @Expose

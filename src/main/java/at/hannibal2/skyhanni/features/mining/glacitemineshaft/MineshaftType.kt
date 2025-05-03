@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.mining.glacitemineshaft
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
+import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.data.TitleManager
 import at.hannibal2.skyhanni.events.SecondPassedEvent
@@ -14,9 +15,13 @@ import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 
 @SkyHanniModule
 object MineshaftType {
-    var found = false
+    private var found = false
 
-    var area: String? = null
+    private var storage: Int
+        get() = ProfileStorageData.profileSpecific?.mining?.mineshaft?.mineshaftsEnteredSinceVanguard ?: 0
+        set(value) {
+            ProfileStorageData.profileSpecific?.mining?.mineshaft?.mineshaftsEnteredSinceVanguard = value
+        }
 
     @HandleEvent
     fun onWorldChange(event: WorldChangeEvent) {
@@ -40,29 +45,36 @@ object MineshaftType {
 
         ChatUtils.debug("Found a ${type.name} mineshaft! [$areaName]")
         ChatUtils.chat("Found a ${type.displayName} mineshaft!")
-        HypixelCommands.partyChat("[SkyHanni] Found a $type mineshaft!")
 
-        if (type == MineshaftTypes.VANGUARD) {
+        val builder = StringBuilder()
+        builder.append("[SkyHanni] Found a ${type.displayName} mineshaft!")
+
+        if (type == MineshaftTypes.FAIR) {
             TitleManager.sendTitle(LorenzColor.WHITE.getChatColor() + "VANGUARD")
+            builder.append(" It took $storage shafts entered to get a Vanguard.")
+        } else {
+            storage++
         }
+
+        HypixelCommands.partyChat(builder.toString())
     }
 
     enum class MineshaftTypes(val displayName: String) {
-        TOPAZ("Topaz"),
-        SAPPHIRE("Sapphire"),
-        AMETHYST("Amethyst"),
-        AMBER("Amber"),
+        TOPA("Topaz"),
+        SAPP("Sapphire"),
+        AMET("Amethyst"),
+        AMBE("Amber"),
         JADE("Jade"),
-        TITANIUM("Titanium"),
-        UMBER("Umber"),
-        TUNGSTEN("Tungsten"),
-        VANGUARD("Vanguard"),
+        TITA("Titanium"),
+        UMBE("Umber"),
+        TUNG("Tungsten"),
+        FAIR("Vanguard"),
         RUBY("Ruby"),
         ONYX("Onyx"),
-        AQUAMARINE("Aquamarine"),
-        CITRINE("Citrine"),
-        PERIDOT("Peridot"),
-        JASPER("Jasper"),
+        AQUA("Aquamarine"),
+        CITR("Citrine"),
+        PERI("Peridot"),
+        JASP("Jasper"),
         OPAL("Opal"),
     }
 }

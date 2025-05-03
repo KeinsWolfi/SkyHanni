@@ -690,6 +690,9 @@ class ProfileSpecificStorage {
 
             @Expose
             var corpseProfitTracker: CorpseTracker.BucketData = CorpseTracker.BucketData()
+
+            @Expose
+            var mineshaftsEnteredSinceVanguard: Int = 0
         }
 
         @Expose

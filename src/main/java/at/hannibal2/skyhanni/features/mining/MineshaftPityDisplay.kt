@@ -72,6 +72,8 @@ object MineshaftPityDisplay {
             profileStorage?.mineshaftTotalCount = value
         }
 
+    private val sinceVang get() = ProfileStorageData.profileSpecific?.mining?.mineshaft?.mineshaftsEnteredSinceVanguard ?: 0
+
     private var sessionMineshafts = 0
 
     var lastMineshaftSpawn = SimpleTimeMark.farPast()
@@ -224,6 +226,7 @@ object MineshaftPityDisplay {
                 ),
             MineshaftPityLine.MINESHAFTS_TOTAL to Renderable.string("§3Mineshafts total: §e${mineshaftTotalCount.addSeparators()}"),
             MineshaftPityLine.MINESHAFTS_SESSION to Renderable.string("§3Mineshafts this session: §e${sessionMineshafts.addSeparators()}"),
+            MineshaftPityLine.MINESHAFTS_SINCE_VANG to Renderable.string("§3Mineshafts since §fVanguard: §e${sinceVang.addSeparators()}"),
         )
 
         display = listOf(
@@ -284,6 +287,7 @@ object MineshaftPityDisplay {
         AVERAGE_BLOCKS_MINESHAFT("§3Average Blocks/Mineshaft: §e361.5", { mineshaftTotalCount != 0 }),
         MINESHAFTS_TOTAL("§3Mineshafts total: §e23", { mineshaftTotalCount != 0 }),
         MINESHAFTS_SESSION("§3Mineshafts this session: §e3", { sessionMineshafts != 0 }),
+        MINESHAFTS_SINCE_VANG("§3Mineshafts since §fVanguard: §e171", { sinceVang != 0 })
         ;
 
         override fun toString() = display
