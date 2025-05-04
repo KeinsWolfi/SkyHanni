@@ -44,18 +44,20 @@ object MineshaftType {
         found = true
 
         ChatUtils.debug("Found a ${type.name} mineshaft! [$areaName]")
-        ChatUtils.chat("Found a ${type.displayName} mineshaft!")
 
         val builder = StringBuilder()
-        builder.append("[SkyHanni] Found a ${type.displayName} mineshaft!")
+        builder.append("Found a ${type.displayName} mineshaft!")
 
         if (type == MineshaftTypes.FAIR) {
             TitleManager.sendTitle(LorenzColor.WHITE.getChatColor() + "VANGUARD")
             builder.append(" It took $storage shafts entered to get a Vanguard.")
+            storage = 0
         } else {
             storage++
+            builder.append(" $storage entered shafts since last Vanguard.")
         }
 
+        ChatUtils.chat(builder.toString())
         HypixelCommands.partyChat(builder.toString())
     }
 
