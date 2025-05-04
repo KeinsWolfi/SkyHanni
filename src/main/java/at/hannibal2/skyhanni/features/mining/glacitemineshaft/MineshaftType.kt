@@ -5,14 +5,17 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.data.TitleManager
+import at.hannibal2.skyhanni.data.hypixel.chat.event.PartyChatEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
+import at.hannibal2.skyhanni.features.commands.PartyChatCommands.PartyChatCommand
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.TimeUtils.format
 
 @SkyHanniModule
 object MineshaftType {
@@ -62,6 +65,10 @@ object MineshaftType {
             builder.append(
                 " It took " +
                     LorenzColor.RED.getChatColor() +
+                    timeSinceVang.passedSince().format() +
+                    LorenzColor.YELLOW.getChatColor() +
+                    " and " +
+                    LorenzColor.RED.getChatColor() +
                     "$sinceVang " +
                     LorenzColor.YELLOW.getChatColor() +
                     if (sinceVang == 1) "mineshaft " else "mineshafts " +
@@ -71,9 +78,10 @@ object MineshaftType {
             ChatUtils.chat(
                 "It took " +
                     LorenzColor.RED.getChatColor() +
-                    timeSinceVang.passedSince() +
+                    timeSinceVang.passedSince().format() +
                     LorenzColor.YELLOW.getChatColor() +
                     " and " +
+                    LorenzColor.RED.getChatColor() +
                     "$sinceVang " +
                     LorenzColor.YELLOW.getChatColor() +
                     if (sinceVang == 1) "mineshaft " else "mineshafts " +
@@ -104,22 +112,54 @@ object MineshaftType {
         HypixelCommands.partyChat(builder.toString().removeColor())
     }
 
-    enum class MineshaftTypes(val displayName: String) {
-        TOPA("Topaz"),
-        SAPP("Sapphire"),
-        AMET("Amethyst"),
-        AMBE("Amber"),
-        JADE("Jade"),
-        TITA("Titanium"),
-        UMBE("Umber"),
-        TUNG("Tungsten"),
-        FAIR("Vanguard"),
-        RUBY("Ruby"),
-        ONYX("Onyx"),
-        AQUA("Aquamarine"),
-        CITR("Citrine"),
-        PERI("Peridot"),
-        JASP("Jasper"),
-        OPAL("Opal"),
+    private val allCommands = listOf(
+        PartyChatCommand(
+            listOf("sincevang", "sincevanguard"),
+            { true },
+            requiresPartyLead = false,
+            executable = {
+                HypixelCommands.partyChat(
+                    "It has been ${timeSinceVang.passedSince().format()} and " +
+                        "$sinceVang mineshafts since the last Vanguard."
+                )
+            },
+        ),
+    )
+
+    private val indexedChatCommands = buildMap {
+        for (command in allCommands) {
+            for (name in command.names) {
+                put(name.lowercase(), command)
+            }
+        }
+    }
+
+    @HandleEvent
+    fun onPartyChat(event: PartyChatEvent) {
+        val message = event.message
+        if (message.firstOrNull() != '!') return
+        val commandA = message.substring(1).substringBefore(' ')
+        val command = indexedChatCommands[commandA.lowercase()] ?: return
+
+        command.executable(event)
+    }
+
+    enum class MineshaftTypes(val color: LorenzColor, val rawName: String, val displayName: String = color.getChatColor() + rawName) {
+        TOPA(LorenzColor.YELLOW, "Topaz"),
+        SAPP(LorenzColor.BLUE, "Sapphire"),
+        AMET(LorenzColor.DARK_PURPLE, "Amethyst"),
+        AMBE(LorenzColor.GOLD, "Amber"),
+        JADE(LorenzColor.GREEN, "Jade"),
+        TITA(LorenzColor.GRAY, "Titanium"),
+        UMBE(LorenzColor.GOLD, "Umber"),
+        TUNG(LorenzColor.DARK_GRAY, "Tungsten"),
+        FAIR(LorenzColor.WHITE, "Vanguard"),
+        RUBY(LorenzColor.RED, "Ruby"),
+        ONYX(LorenzColor.BLACK, "Onyx"),
+        AQUA(LorenzColor.DARK_BLUE, "Aquamarine"),
+        CITR(LorenzColor.YELLOW, "Citrine"),
+        PERI(LorenzColor.DARK_GREEN, "Peridot"),
+        JASP(LorenzColor.LIGHT_PURPLE, "Jasper"),
+        OPAL(LorenzColor.WHITE, "Opal"),
     }
 }
