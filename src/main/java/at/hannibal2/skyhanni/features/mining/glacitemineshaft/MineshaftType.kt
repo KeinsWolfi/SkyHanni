@@ -11,16 +11,25 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LorenzColor
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 
 @SkyHanniModule
 object MineshaftType {
     private var found = false
 
-    private var storage: Int
-        get() = ProfileStorageData.profileSpecific?.mining?.mineshaft?.mineshaftsEnteredSinceVanguard ?: 0
+    private val profileStorage get() = ProfileStorageData.profileSpecific?.mining?.mineshaft
+
+    private var sinceVang: Int
+        get() = profileStorage?.mineshaftsEnteredSinceVanguard ?: 0
         set(value) {
-            ProfileStorageData.profileSpecific?.mining?.mineshaft?.mineshaftsEnteredSinceVanguard = value
+            profileStorage?.mineshaftsEnteredSinceVanguard = value
+        }
+
+    private var timeSinceVang: SimpleTimeMark
+        get() = profileStorage?.lastVanguardTime ?: SimpleTimeMark.farPast()
+        set(value) {
+            profileStorage?.lastVanguardTime = value
         }
 
     @HandleEvent
@@ -53,29 +62,38 @@ object MineshaftType {
             builder.append(
                 " It took " +
                     LorenzColor.RED.getChatColor() +
-                    "$storage " +
+                    "$sinceVang " +
                     LorenzColor.YELLOW.getChatColor() +
-                    if (storage == 1) "mineshaft " else "mineshafts " +
+                    if (sinceVang == 1) "mineshaft " else "mineshafts " +
                         "entered to get a Vanguard."
             )
 
             ChatUtils.chat(
                 "It took " +
                     LorenzColor.RED.getChatColor() +
-                    "$storage " +
+                    timeSinceVang.passedSince() +
                     LorenzColor.YELLOW.getChatColor() +
-                    if (storage == 1) "mineshaft " else "mineshafts " +
+                    " and " +
+                    "$sinceVang " +
+                    LorenzColor.YELLOW.getChatColor() +
+                    if (sinceVang == 1) "mineshaft " else "mineshafts " +
                         "entered to get a Vanguard."
             )
 
-            storage = 0
+            timeSinceVang = SimpleTimeMark.now()
+
+            sinceVang = 0
         } else {
-            storage++
+            if (timeSinceVang.isFarPast()) {
+                timeSinceVang = SimpleTimeMark.now()
+            }
+
+            sinceVang++
             ChatUtils.chat(
                 LorenzColor.RED.getChatColor() +
-                    "$storage " +
+                    "$sinceVang " +
                     LorenzColor.YELLOW.getChatColor() +
-                    if (storage == 1) "mineshaft " else "mineshafts " +
+                    if (sinceVang == 1) "mineshaft " else "mineshafts " +
                         "since " +
                         LorenzColor.WHITE.getChatColor() +
                         "Vanguard"

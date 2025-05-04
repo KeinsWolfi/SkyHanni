@@ -693,6 +693,9 @@ class ProfileSpecificStorage {
 
             @Expose
             var mineshaftsEnteredSinceVanguard: Int = 0
+
+            @Expose
+            var lastVanguardTime: SimpleTimeMark = farPast()
         }
 
         @Expose
