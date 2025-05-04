@@ -50,15 +50,40 @@ object MineshaftType {
 
         if (type == MineshaftTypes.FAIR) {
             TitleManager.sendTitle(LorenzColor.WHITE.getChatColor() + "VANGUARD")
-            builder.append(" It took $storage shafts entered to get a Vanguard.")
+            builder.append(
+                " It took " +
+                    LorenzColor.RED.getChatColor() +
+                    "$storage " +
+                    LorenzColor.YELLOW.getChatColor() +
+                    if (storage == 1) "mineshaft " else "mineshafts " +
+                        "entered to get a Vanguard."
+            )
+
+            ChatUtils.chat(
+                "It took " +
+                    LorenzColor.RED.getChatColor() +
+                    "$storage " +
+                    LorenzColor.YELLOW.getChatColor() +
+                    if (storage == 1) "mineshaft " else "mineshafts " +
+                        "entered to get a Vanguard."
+            )
+
             storage = 0
         } else {
             storage++
-            builder.append(" $storage entered shafts since last Vanguard.")
+            ChatUtils.chat(
+                LorenzColor.RED.getChatColor() +
+                    "$storage " +
+                    LorenzColor.YELLOW.getChatColor() +
+                    if (storage == 1) "mineshaft " else "mineshafts " +
+                        "since " +
+                        LorenzColor.WHITE.getChatColor() +
+                        "Vanguard"
+            )
         }
 
         ChatUtils.chat(builder.toString())
-        HypixelCommands.partyChat(builder.toString())
+        HypixelCommands.partyChat(builder.toString().removeColor())
     }
 
     enum class MineshaftTypes(val displayName: String) {

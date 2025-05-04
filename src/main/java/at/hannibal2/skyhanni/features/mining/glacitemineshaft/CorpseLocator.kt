@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
@@ -54,9 +53,6 @@ object CorpseLocator {
             .forEach { entity ->
                 val helmetName = entity.getStandHelmet()?.getInternalName() ?: return
                 val corpseType = MineshaftWaypointType.getByHelmetOrNull(helmetName) ?: return
-
-                val article = if (corpseType.displayText == "Umber Corpse") "an" else "a"
-                ChatUtils.chat("Located $article ${corpseType.displayText} and marked its location with a waypoint.")
 
                 MineshaftWaypoints.waypoints.add(
                     MineshaftWaypoint(
