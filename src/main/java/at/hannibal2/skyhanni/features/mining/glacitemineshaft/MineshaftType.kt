@@ -58,7 +58,7 @@ object MineshaftType {
         ChatUtils.debug("Found a ${type.name} mineshaft! [$areaName]")
 
         val builder = StringBuilder()
-        builder.append("Found a ${type.displayName} mineshaft!")
+        builder.append("Found a ${type.displayName} mineshaft" + LorenzColor.YELLOW.getChatColor() + "!")
 
         if (type == MineshaftTypes.FAIR) {
             TitleManager.sendTitle(LorenzColor.WHITE.getChatColor() + "VANGUARD")
@@ -144,7 +144,7 @@ object MineshaftType {
         command.executable(event)
     }
 
-    enum class MineshaftTypes(val color: LorenzColor, val rawName: String, val displayName: String = color.getChatColor() + rawName) {
+    enum class MineshaftTypes(val color: LorenzColor, val rawName: String) {
         TOPA(LorenzColor.YELLOW, "Topaz"),
         SAPP(LorenzColor.BLUE, "Sapphire"),
         AMET(LorenzColor.DARK_PURPLE, "Amethyst"),
@@ -161,5 +161,8 @@ object MineshaftType {
         PERI(LorenzColor.DARK_GREEN, "Peridot"),
         JASP(LorenzColor.LIGHT_PURPLE, "Jasper"),
         OPAL(LorenzColor.WHITE, "Opal"),
+        ;
+
+        val displayName: String = color.getChatColor() + rawName
     }
 }
