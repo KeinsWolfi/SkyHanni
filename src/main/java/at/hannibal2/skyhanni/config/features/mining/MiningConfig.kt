@@ -13,6 +13,7 @@ import at.hannibal2.skyhanni.config.features.mining.nucleus.AreaWallsConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.CrystalHighlighterConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.CrystalNucleusTrackerConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.PowderTrackerConfig
+import at.hannibal2.skyhanni.config.features.mining.nucleus.StructureScannerConfig
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.Category
@@ -53,6 +54,14 @@ class MiningConfig {
     @ConfigOption(name = "Crystal Nucleus Tracker", desc = "")
     @Accordion
     var crystalNucleusTracker: CrystalNucleusTrackerConfig = CrystalNucleusTrackerConfig()
+
+    @Expose
+    @ConfigOption(
+        name = "Structure Scanner",
+        desc = ""
+    )
+    @Accordion
+    var structureScannerConfig: StructureScannerConfig = StructureScannerConfig()
 
     @Expose
     @ConfigOption(name = "Cold Overlay", desc = "")

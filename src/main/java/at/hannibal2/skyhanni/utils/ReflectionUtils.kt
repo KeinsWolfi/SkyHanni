@@ -168,4 +168,14 @@ object ReflectionUtils {
             throw IllegalArgumentException("Method ${instance.javaClass.name}#${method.name} is not a valid runnable", e)
         }
     }
+
+    fun field(instance: Any, name: String): Any? {
+        return try {
+            val field = instance::class.java.getDeclaredField(name)
+            field.isAccessible = true
+            field.get(instance)
+        } catch (ignored: Exception) {
+            null
+        }
+    }
 }
