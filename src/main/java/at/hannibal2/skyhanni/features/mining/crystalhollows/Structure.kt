@@ -45,7 +45,7 @@ enum class Structure(
         CrystalHollowsQuarter.MITHRIL_DEPOSITS,
         "§2Divan",
         Color(0, 170, 0), // §2  → dark-green
-        0, 5, 0
+        0, 5, 0,
     ),
     CITY(
         listOf(
@@ -62,7 +62,7 @@ enum class Structure(
         CrystalHollowsQuarter.PRECURSOR_REMNANTS,
         "§bCity",
         Color(85, 255, 255),
-        24, 0, -17
+        24, 0, -17,
     ),
     TEMPLE(
         listOf(
@@ -73,7 +73,7 @@ enum class Structure(
         CrystalHollowsQuarter.JUNGLE,
         "§5Temple",
         Color(170, 0, 170),
-        -45, 47, -18
+        -4, 7, -17,
     ),
     KING(
         listOf(
@@ -86,7 +86,7 @@ enum class Structure(
         CrystalHollowsQuarter.GOBLIN_HOLDOUT,
         "§6King",
         Color(255, 170, 0),
-        1, -1, 2
+        1, -1, 2,
     ),
     BAL(
         listOf(
@@ -106,7 +106,7 @@ enum class Structure(
         CrystalHollowsQuarter.MAGMA_FIELDS,
         "§4Bal",
         Color(170, 0, 0),
-        0, 1, 0
+        0, 1, 0,
     ),
     FAIRY_GROTTO(
         listOf(
@@ -116,7 +116,7 @@ enum class Structure(
         CrystalHollowsQuarter.ANY,
         "",
         Color(255, 85, 255),
-        0, 0, 0
+        0, 0, 0,
     ),
     GOLDEN_DRAGON(
         listOf(
@@ -131,7 +131,7 @@ enum class Structure(
         CrystalHollowsQuarter.ANY,
         "", // no display name in original
         Color.ORANGE, // pick a visible highlight for the nest
-        0, -3, 5
+        0, -3, 5,
     ),
 }
 

@@ -29,6 +29,13 @@ object CrystalNucleusStructureScanner {
 
     val config get() = SkyHanniMod.feature.mining.structureScannerConfig
 
+    private val blocksToRemoveCoords = listOf(
+        Triple(15, -39, 23),
+        Triple(15, -38, 23),
+    )
+
+    private val blocksToRemove = mutableListOf<LorenzVec>()
+
     class World {
         val crystalWaypoints: ConcurrentHashMap<String, BlockPos> = ConcurrentHashMap()
         private val mobSpotWaypoints: ConcurrentHashMap<String, BlockPos> = ConcurrentHashMap()
@@ -66,16 +73,14 @@ object CrystalNucleusStructureScanner {
 
     private var unloadedTimestamp: Long = 0
 
-    private val internalSkytilsNames: HashMap<String?, String?> = object : HashMap<String?, String?>() {
-        init {
-            put("§6King", "internal_king")
-            put("§6Queen", "internal_den")
-            put("§2Divan", "internal_mines")
-            put("§5Temple", "internal_temple")
-            put("§bCity", "internal_city")
-            put("§6Bal", "internal_bal")
-        }
-    }
+    private val internalSkytilsNames: HashMap<String?, String?> = hashMapOf(
+        "§6King" to "internal_king",
+        "§6Queen" to "internal_den",
+        "§2Divan" to "internal_mines",
+        "§5Temple" to "internal_temple",
+        "§bCity" to "internal_city",
+        "§6Bal" to "internal_bal"
+    )
 
     @HandleEvent
     fun onChunkLoad(event: ChunkLoadEvent) {
@@ -100,6 +105,13 @@ object CrystalNucleusStructureScanner {
             worlds[HypixelLocationApi.serverId ?: "unknown"] = World()
         }
         if (cooldown == 0) {
+
+            for (coord in blocksToRemove) {
+                MinecraftCompat.localWorld.setBlockToAir(
+                    coord.toBlockPos()
+                )
+            }
+
             if (initialScan) return
             val currentWorld = worlds[HypixelLocationApi.serverId ?: "unknown"] ?: return
             initialScan = true
@@ -143,6 +155,17 @@ object CrystalNucleusStructureScanner {
                                                 chunk.zPosition * 16 + z + structure.offsetZ,
                                             ),
                                         )
+                                        if (structure == Structure.TEMPLE) {
+                                            for (coord in blocksToRemoveCoords) {
+                                                blocksToRemove.add(
+                                                    LorenzVec(
+                                                        chunk.xPosition * 16 + coord.first,
+                                                        y + coord.second,
+                                                        chunk.zPosition * 16 + coord.third
+                                                    )
+                                                )
+                                            }
+                                        }
                                         return
                                     }
                                 }
