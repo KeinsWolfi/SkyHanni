@@ -14,4 +14,12 @@ class StructureScannerConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var enabled: Boolean = true
+
+    @Expose
+    @ConfigOption(
+        name = "Waypoints",
+        desc = "Enable waypoints for the structure scanner."
+    )
+    @ConfigEditorBoolean
+    var waypoints: Boolean = true
 }

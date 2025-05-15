@@ -7,12 +7,14 @@ import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.init.Blocks
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.util.BlockPos
+import java.awt.Color
 
 enum class Structure(
     val blocks: List<Triple<Block, PropertyEnum<*>?, Comparable<*>?>>,
     val type: StructureType,
     val quarter: CrystalHollowsQuarter,
     val displayName: String,
+    val color: Color,
     val offsetX: Int,
     val offsetY: Int,
     val offsetZ: Int,
@@ -29,7 +31,21 @@ enum class Structure(
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.GOBLIN_HOLDOUT,
         "§6Queen",
+        Color(255, 170, 0),
         0, 5, 0,
+    ),
+    DIVAN(
+        listOf(
+            Triple(Blocks.quartz_block, null, null),
+            Triple(Blocks.quartz_stairs, null, null),
+            Triple(Blocks.stone_brick_stairs, null, null),
+            Triple(Blocks.stonebrick, null, null),
+        ),
+        StructureType.CH_CRYSTALS,
+        CrystalHollowsQuarter.MITHRIL_DEPOSITS,
+        "§2Divan",
+        Color(0, 170, 0), // §2  → dark-green
+        0, 5, 0
     ),
     CITY(
         listOf(
@@ -45,21 +61,18 @@ enum class Structure(
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.PRECURSOR_REMNANTS,
         "§bCity",
+        Color(85, 255, 255),
         24, 0, -17
     ),
     TEMPLE(
         listOf(
-            Triple(Blocks.bedrock, null, null),
-            Triple(Blocks.clay, null, null),
-            Triple(Blocks.clay, null, null),
-            Triple(Blocks.stained_hardened_clay, null, null),
-            Triple(Blocks.wool, null, null),
-            Triple(Blocks.leaves, null, null),
-            Triple(Blocks.leaves, null, null),
+            Triple(Blocks.stone, BlockStone.VARIANT, BlockStone.EnumType.GRANITE), // Granite stone at the bottom
+            Triple(Blocks.hopper, null, null), // Hopper above the granite
         ),
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.JUNGLE,
         "§5Temple",
+        Color(170, 0, 170),
         -45, 47, -18
     ),
     KING(
@@ -72,6 +85,7 @@ enum class Structure(
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.GOBLIN_HOLDOUT,
         "§6King",
+        Color(255, 170, 0),
         1, -1, 2
     ),
     BAL(
@@ -90,7 +104,8 @@ enum class Structure(
         ),
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.MAGMA_FIELDS,
-        "§6Bal",
+        "§4Bal",
+        Color(170, 0, 0),
         0, 1, 0
     ),
     FAIRY_GROTTO(
@@ -100,8 +115,24 @@ enum class Structure(
         StructureType.FAIRY_GROTTO,
         CrystalHollowsQuarter.ANY,
         "",
+        Color(255, 85, 255),
         0, 0, 0
-    )
+    ),
+    GOLDEN_DRAGON(
+        listOf(
+            Triple(Blocks.stone, null, null),
+            Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.RED),
+            Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.RED),
+            Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.RED),
+            Triple(Blocks.skull, null, null),
+            Triple(Blocks.wool, BlockColored.COLOR, EnumDyeColor.RED),
+        ),
+        StructureType.GOLDEN_DRAGON,
+        CrystalHollowsQuarter.ANY,
+        "", // no display name in original
+        Color.ORANGE, // pick a visible highlight for the nest
+        0, -3, 5
+    ),
 }
 
 enum class StructureType {
