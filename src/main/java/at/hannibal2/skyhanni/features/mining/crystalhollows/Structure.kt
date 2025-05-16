@@ -152,21 +152,22 @@ enum class Structure(
     ),
     CORLEONE_BRIDGE(
         listOf(
-            Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.CYAN),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
-            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.cobblestone_wall, null, null),
+            Triple(Blocks.iron_bars, null, null),
+            Triple(Blocks.cobblestone_wall, null, null),
+            Triple(Blocks.iron_bars, null, null),
+            Triple(Blocks.cobblestone_wall, null, null),
+            Triple(Blocks.iron_bars, null, null),
+            Triple(Blocks.cobblestone_wall, null, null),
+            Triple(Blocks.iron_bars, null, null),
+            Triple(Blocks.cobblestone_wall, null, null),
+            Triple(Blocks.iron_bars, null, null),
         ),
         StructureType.CH_MOB_SPOTS,
         CrystalHollowsQuarter.ANY,
         "§2Corleone Bridge",
         Color(0, 170, 0),
-        0, 0, -6,
+        20, -12, 25,
     )
 }
 
