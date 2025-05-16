@@ -159,6 +159,7 @@ object CrystalNucleusStructureScanner {
         }
     }
 
+    @Suppress("LongMethod")
     private fun handleChunkLoad(chunk: Chunk, currentWorld: World) {
         for (x in 0..15) {
             for (y in 0..169) {
@@ -227,6 +228,12 @@ object CrystalNucleusStructureScanner {
                                         chunk.zPosition * 16 + z + structure.offsetZ,
                                     ),
                                 )
+                                sendCoordinatesMessage(
+                                    structure,
+                                    chunk.xPosition * 16 + x + structure.offsetX,
+                                    y + structure.offsetY,
+                                    chunk.zPosition * 16 + z + structure.offsetZ,
+                                )
                                 return
                             }
                         }
@@ -251,6 +258,31 @@ object CrystalNucleusStructureScanner {
                                         y + structure.offsetY,
                                         chunk.zPosition * 16 + z + structure.offsetZ,
                                     ),
+                                )
+                                sendCoordinatesMessage(
+                                    structure,
+                                    chunk.xPosition * 16 + x + structure.offsetX,
+                                    y + structure.offsetY,
+                                    chunk.zPosition * 16 + z + structure.offsetZ,
+                                )
+                                return
+                            }
+                        }
+
+                        if (structure.type == StructureType.CH_UNIQUE) {
+                            if (scanStructure(chunk, structure, x, y, z)) {
+                                currentWorld.updateDragonNest(
+                                    BlockPos(
+                                        chunk.xPosition * 16 + x + structure.offsetX,
+                                        y + structure.offsetY,
+                                        chunk.zPosition * 16 + z + structure.offsetZ,
+                                    ),
+                                )
+                                sendCoordinatesMessage(
+                                    structure,
+                                    chunk.xPosition * 16 + x + structure.offsetX,
+                                    y + structure.offsetY,
+                                    chunk.zPosition * 16 + z + structure.offsetZ,
                                 )
                                 return
                             }

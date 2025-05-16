@@ -137,6 +137,37 @@ enum class Structure(
         Color.ORANGE, // pick a visible highlight for the nest
         0, -3, 5,
     ),
+    ODAWA(
+        listOf(
+            Triple(Blocks.spruce_fence, null, null),
+            Triple(Blocks.spruce_fence, null, null),
+            Triple(Blocks.spruce_fence, null, null),
+            Triple(Blocks.hay_block, null, null),
+        ),
+        StructureType.CH_UNIQUE,
+        CrystalHollowsQuarter.ANY,
+        "§5Odawa",
+        Color(255, 64, 255),
+        -6, 1, 25,
+    ),
+    CORLEONE_BRIDGE(
+        listOf(
+            Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.CYAN),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+            Triple(Blocks.stonebrick, null, null),
+        ),
+        StructureType.CH_MOB_SPOTS,
+        CrystalHollowsQuarter.ANY,
+        "§2Corleone Bridge",
+        Color(0, 170, 0),
+        0, 0, -6,
+    )
 }
 
 enum class StructureType {
@@ -144,7 +175,8 @@ enum class StructureType {
     CH_CRYSTALS,
     CH_MOB_SPOTS,
     WORM_FISHING,
-    GOLDEN_DRAGON
+    GOLDEN_DRAGON,
+    CH_UNIQUE,
 }
 
 enum class CrystalHollowsQuarter(private val predicate: (BlockPos) -> Boolean) {
