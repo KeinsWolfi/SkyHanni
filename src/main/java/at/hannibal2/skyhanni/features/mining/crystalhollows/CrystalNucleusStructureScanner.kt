@@ -210,7 +210,13 @@ object CrystalNucleusStructureScanner {
                                         chunk.zPosition * 16 + z
                                     )
                                 )
-                                return
+                                sendCoordinatesMessage(
+                                    structure,
+                                    chunk.xPosition * 16 + x,
+                                    y,
+                                    chunk.zPosition * 16 + z
+                                )
+                                // return
                             }
                         }
 
