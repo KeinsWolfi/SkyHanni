@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.mining.crystalhollows
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.hypixelapi.HypixelLocationApi
+import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ChunkLoadEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
@@ -21,6 +22,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.ReportedException
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.client.ClientCommandHandler
+import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -30,10 +32,10 @@ object CrystalNucleusStructureScanner {
     val config get() = SkyHanniMod.feature.mining.structureScannerConfig
 
     private val blocksToRemoveCoords = listOf(
-        Triple(10, 0, 1),
-        Triple(10, 1, 1),
-        Triple(10, 2, 1),
-        Triple(10, 3, 1),
+        Triple(0, 0, -3),
+        Triple(0, 1, -3),
+        Triple(0, 2, -3),
+        Triple(0, 3, -3),
     )
 
     private val blocksToRemove = mutableListOf<LorenzVec>()
@@ -84,7 +86,7 @@ object CrystalNucleusStructureScanner {
         "§4Bal" to "internal_bal"
     )
 
-    @HandleEvent
+    @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
     fun onChunkLoad(event: ChunkLoadEvent) {
         if (!config.enabled) return
         if (cooldown != 0) return
@@ -96,7 +98,7 @@ object CrystalNucleusStructureScanner {
         }
     }
 
-    @HandleEvent
+    @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
     fun onTick(event: SkyHanniTickEvent) {
         if (!config.enabled) return
         if (cooldown > 0) {
@@ -107,7 +109,6 @@ object CrystalNucleusStructureScanner {
             worlds[HypixelLocationApi.serverId ?: "unknown"] = World()
         }
         if (cooldown == 0) {
-
             for (coord in blocksToRemove) {
                 MinecraftCompat.localWorld.setBlockToAir(
                     coord.toBlockPos()
@@ -158,12 +159,24 @@ object CrystalNucleusStructureScanner {
                                             ),
                                         )
                                         if (structure == Structure.TEMPLE) {
+                                            StructureWaypoints.waypoints.add(
+                                                StructureWaypoint(
+                                                    displayName = "§5Temple Crystal",
+                                                    onlyText = false,
+                                                    location = LorenzVec(
+                                                        chunk.xPosition * 16 + x,
+                                                        y,
+                                                        chunk.zPosition * 16 + z,
+                                                    ),
+                                                    color = Color(170, 0, 170),
+                                                )
+                                            )
                                             for (coord in blocksToRemoveCoords) {
                                                 blocksToRemove.add(
                                                     LorenzVec(
-                                                        chunk.xPosition * 16 + coord.first,
+                                                        chunk.xPosition * 16 + x + coord.first,
                                                         y + coord.second,
-                                                        chunk.zPosition * 16 + coord.third
+                                                        chunk.zPosition * 16 + z + coord.third
                                                     )
                                                 )
                                             }
