@@ -5,6 +5,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.hypixelapi.HypixelLocationApi
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ChunkLoadEvent
+import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -12,6 +13,8 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.ReflectionUtils
+import at.hannibal2.skyhanni.utils.RenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.RenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.block.Block
 import net.minecraft.block.properties.PropertyEnum
@@ -24,6 +27,7 @@ import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.client.ClientCommandHandler
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 @SkyHanniModule
@@ -43,7 +47,7 @@ object CrystalNucleusStructureScanner {
     class World {
         val crystalWaypoints: ConcurrentHashMap<String, BlockPos> = ConcurrentHashMap()
         private val mobSpotWaypoints: ConcurrentHashMap<String, BlockPos> = ConcurrentHashMap()
-        private val fairyGrottos: ConcurrentHashMap<BlockPos, Int> = ConcurrentHashMap()
+        val fairyGrottos: CopyOnWriteArrayList<FairyGrottoCluster> = CopyOnWriteArrayList()
         private val dragonNestWaypoints: ConcurrentHashMap<BlockPos?, Int> = ConcurrentHashMap()
         private val chunkCache: HashSet<Int> = HashSet()
 
@@ -55,8 +59,36 @@ object CrystalNucleusStructureScanner {
             mobSpotWaypoints[name] = blockPos
         }
 
-        fun updateFairyGrottos(blockPos: BlockPos) {
-            fairyGrottos[blockPos] = 0
+        fun updateFairyGrottos(pos: BlockPos) {
+            // 32-block proximity rule
+            val range = 32
+
+            // Step 1 – find the first cluster close enough
+            var host: FairyGrottoCluster? = null
+            for (cluster in fairyGrottos) {
+                if (cluster.isNear(pos, range)) {
+                    host = cluster
+                    break
+                }
+            }
+
+            // Step 2 – none found? create a new one
+            if (host == null) {
+                host = FairyGrottoCluster(pos)
+                fairyGrottos += host
+            } else {
+                host.add(pos)
+            }
+
+            // Step 3 – merge any *other* clusters that are now overlapping
+            val toRemove = mutableListOf<FairyGrottoCluster>()
+            for (cluster in fairyGrottos) {
+                if (cluster !== host && cluster.isNear(pos, range)) {
+                    host.merge(cluster)
+                    toRemove += cluster
+                }
+            }
+            fairyGrottos.removeAll(toRemove.toSet())
         }
 
         fun updateDragonNest(blockPos: BlockPos?) {
@@ -71,7 +103,7 @@ object CrystalNucleusStructureScanner {
             return chunkCache.contains(chunk.xPosition * 65536 + chunk.zPosition)
         }
     }
-    private val worlds: HashMap<String, World> = HashMap()
+    private var currentWorld: World = World()
     var cooldown: Int = 100
     private var initialScan: Boolean = false
 
@@ -90,7 +122,6 @@ object CrystalNucleusStructureScanner {
     fun onChunkLoad(event: ChunkLoadEvent) {
         if (!config.enabled) return
         if (cooldown != 0) return
-        val currentWorld = worlds[HypixelLocationApi.serverId ?: "unknown"] ?: return
         // ChatUtils.debug("Scanning chunk ${event.chunk.xPosition}, ${event.chunk.zPosition}")
         if (!currentWorld.isChunkCached(event.chunk)) {
             handleChunkLoad(event.chunk, currentWorld)
@@ -104,9 +135,9 @@ object CrystalNucleusStructureScanner {
         if (cooldown > 0) {
             cooldown--
         }
-        if (cooldown == 1 && !worlds.containsKey(HypixelLocationApi.serverId)) {
+        if (cooldown == 1) {
             ChatUtils.debug("Creating new world for ${HypixelLocationApi.serverId}")
-            worlds[HypixelLocationApi.serverId ?: "unknown"] = World()
+            currentWorld = World()
         }
         if (cooldown == 0) {
             for (coord in blocksToRemove) {
@@ -116,7 +147,6 @@ object CrystalNucleusStructureScanner {
             }
 
             if (initialScan) return
-            val currentWorld = worlds[HypixelLocationApi.serverId ?: "unknown"] ?: return
             initialScan = true
             val `object`: Any? = ReflectionUtils.field(MinecraftCompat.localWorld.chunkProvider, "field_73237_c")
             if (`object` is List<*>) {
@@ -210,13 +240,6 @@ object CrystalNucleusStructureScanner {
                                         chunk.zPosition * 16 + z
                                     )
                                 )
-                                sendCoordinatesMessage(
-                                    structure,
-                                    chunk.xPosition * 16 + x,
-                                    y,
-                                    chunk.zPosition * 16 + z
-                                )
-                                // return
                             }
                         }
 
@@ -322,7 +345,40 @@ object CrystalNucleusStructureScanner {
         if (System.currentTimeMillis() - unloadedTimestamp > 2000) {
             cooldown = 80
             initialScan = false
+            currentWorld = World()
+            blocksToRemove.clear()
             unloadedTimestamp = System.currentTimeMillis()
+        }
+    }
+
+    @HandleEvent
+    fun onWorldRender(event: SkyHanniRenderWorldEvent) {
+        if (!config.enabled) return
+
+        for (cluster in currentWorld.fairyGrottos) {
+            for (block in cluster.blocks) {
+                if (block.y <= 64) {
+                    event.drawWaypointFilled(
+                        LorenzVec(block.x, block.y, block.z),
+                        Color(255, 64, 64),
+                        seeThroughBlocks = true,
+                    )
+                } else {
+                    event.drawWaypointFilled(
+                        LorenzVec(block.x, block.y, block.z),
+                        Color(255, 85, 255),
+                        seeThroughBlocks = true,
+                    )
+                }
+            }
+
+            val fieldBlocks = cluster.blocks.filter { it.y <= 64 }
+
+            event.drawDynamicText(
+                LorenzVec(cluster.center.x, cluster.center.y, cluster.center.z),
+                "§dFairy Grotto: §c${fieldBlocks.size}§d/${cluster.blocks.size}",
+                1.0,
+            )
         }
     }
 }
