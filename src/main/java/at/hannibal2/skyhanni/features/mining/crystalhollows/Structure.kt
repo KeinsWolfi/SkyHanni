@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.mining.crystalhollows
 import net.minecraft.block.Block
 import net.minecraft.block.BlockColored
 import net.minecraft.block.BlockStone
+import net.minecraft.block.BlockStoneBrick
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.init.Blocks
 import net.minecraft.item.EnumDyeColor
@@ -66,14 +67,17 @@ enum class Structure(
     ),
     TEMPLE(
         listOf(
-            Triple(Blocks.stone, BlockStone.VARIANT, BlockStone.EnumType.GRANITE), // Granite stone at the bottom
-            Triple(Blocks.hopper, null, null), // Hopper above the granite
+            Triple(Blocks.bedrock, null, null),
+            Triple(Blocks.bedrock, null, null),
+            Triple(Blocks.bedrock, null, null),
+            Triple(Blocks.bedrock, null, null),
+            Triple(Blocks.stonebrick, BlockStoneBrick.VARIANT, BlockStoneBrick.EnumType.CHISELED),
         ),
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.JUNGLE,
         "§5Temple",
         Color(170, 0, 170),
-        -4, 7, -17,
+        -19, 46, -39,
     ),
     KING(
         listOf(

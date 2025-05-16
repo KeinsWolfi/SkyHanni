@@ -30,8 +30,10 @@ object CrystalNucleusStructureScanner {
     val config get() = SkyHanniMod.feature.mining.structureScannerConfig
 
     private val blocksToRemoveCoords = listOf(
-        Triple(15, -39, 23),
-        Triple(15, -38, 23),
+        Triple(10, 0, 1),
+        Triple(10, 1, 1),
+        Triple(10, 2, 1),
+        Triple(10, 3, 1),
     )
 
     private val blocksToRemove = mutableListOf<LorenzVec>()
@@ -79,7 +81,7 @@ object CrystalNucleusStructureScanner {
         "§2Divan" to "internal_mines",
         "§5Temple" to "internal_temple",
         "§bCity" to "internal_city",
-        "§6Bal" to "internal_bal"
+        "§4Bal" to "internal_bal"
     )
 
     @HandleEvent
@@ -250,7 +252,7 @@ object CrystalNucleusStructureScanner {
     private fun addToSkytilsMap(name: String, x: Int, y: Int, z: Int) {
         ClientCommandHandler.instance.executeCommand(
             MinecraftCompat.localPlayer,
-            "/sthw set " + x + " " + y + " " + z + " " + internalSkytilsNames[name],
+            "/sthw set " + internalSkytilsNames[name] + " " + x + " " + y + " " + z,
         )
     }
 
