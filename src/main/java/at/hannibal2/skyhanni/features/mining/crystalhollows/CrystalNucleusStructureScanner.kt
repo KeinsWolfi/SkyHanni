@@ -3,6 +3,8 @@ package at.hannibal2.skyhanni.features.mining.crystalhollows
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.hypixelapi.HypixelLocationApi
+import at.hannibal2.skyhanni.config.commands.CommandCategory
+import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ChunkLoadEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
@@ -40,6 +42,7 @@ object CrystalNucleusStructureScanner {
         Triple(0, 1, -3),
         Triple(0, 2, -3),
         Triple(0, 3, -3),
+        Triple(0, 4, -3),
     )
 
     private val blocksToRemove = mutableListOf<LorenzVec>()
@@ -49,7 +52,7 @@ object CrystalNucleusStructureScanner {
         private val mobSpotWaypoints: ConcurrentHashMap<String, BlockPos> = ConcurrentHashMap()
         val fairyGrottos: CopyOnWriteArrayList<FairyGrottoCluster> = CopyOnWriteArrayList()
         private val dragonNestWaypoints: ConcurrentHashMap<BlockPos?, Int> = ConcurrentHashMap()
-        private val chunkCache: HashSet<Int> = HashSet()
+        val chunkCache: HashSet<Int> = HashSet()
 
         fun updateCrystalWaypoints(name: String, blockPos: BlockPos) {
             crystalWaypoints[name] = blockPos
@@ -411,6 +414,46 @@ object CrystalNucleusStructureScanner {
                 "§dFairy Grotto: §c${fieldBlocks.size}§d/${cluster.blocks.size}",
                 1.0,
             )
+        }
+    }
+
+    @HandleEvent
+    fun onCommandRegistration(event: CommandRegistrationEvent) {
+        event.register("shrecheckstructures") {
+            description = "Recheck Structures"
+            category = CommandCategory.USERS_RESET
+            callback {
+                currentWorld.chunkCache.clear()
+                val `object`: Any? = ReflectionUtils.field(MinecraftCompat.localWorld.chunkProvider, "field_73237_c")
+                if (`object` is List<*>) {
+                    ChatUtils.debug("Scanning ${`object`.size} chunks")
+                    for (chunk in `object` as List<Chunk?>) {
+                        currentWorld.cacheChunk(chunk!!)
+                        handleChunkLoad(chunk, currentWorld)
+                    }
+                }
+            }
+        }
+        event.register("ghostblock") {
+            description = "Set Block youre looking at to air."
+            category = CommandCategory.MAIN
+            callback {
+                val ray = MinecraftCompat.localPlayer.rayTrace(100.0, 1.0f)
+                val blockState: IBlockState = MinecraftCompat.localWorld.getBlockState(ray.blockPos)
+                val block: Block = blockState.block
+                if (block != Blocks.air) {
+                    blocksToRemove.add(
+                        LorenzVec(
+                            ray.blockPos.x,
+                            ray.blockPos.y,
+                            ray.blockPos.z
+                        )
+                    )
+                    ChatUtils.chat("Set ${block.localizedName} at ${ray.blockPos.x}, ${ray.blockPos.y}, ${ray.blockPos.z} to air")
+                } else {
+                    ChatUtils.userError("Block is already air")
+                }
+            }
         }
     }
 }

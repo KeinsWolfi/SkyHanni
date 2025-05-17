@@ -182,7 +182,8 @@ enum class StructureType {
 
 enum class CrystalHollowsQuarter(private val predicate: (BlockPos) -> Boolean) {
     // Expand by 4 chunks to make sure we don't miss any structures
-    JUNGLE({ it.x <= 576 && it.z <= 576 }),
+    // Jungle 5 chunks as temple can spawn almost fully in goblin holdout
+    JUNGLE({ it.x <= 592 && it.z <= 592 }),
     PRECURSOR_REMNANTS({ it.x > 448 && it.z > 448 }),
     GOBLIN_HOLDOUT({ it.x <= 576 && it.z > 448 }),
     MITHRIL_DEPOSITS({ it.x > 448 && it.z <= 576 }),
