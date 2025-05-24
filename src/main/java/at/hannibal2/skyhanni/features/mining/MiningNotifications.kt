@@ -12,6 +12,8 @@ import at.hannibal2.skyhanni.events.ColdUpdateEvent
 import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.test.command.ErrorManager
+import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
@@ -19,6 +21,9 @@ import at.hannibal2.skyhanni.utils.PrimitiveItemStack.Companion.makePrimitiveSta
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import java.awt.SystemTray
+import java.awt.Toolkit
+import java.awt.TrayIcon
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -107,5 +112,37 @@ object MiningNotifications {
         if (type !in config.notifications) return
         TitleManager.sendTitle(type.notification, duration = 1.5.seconds)
         if (config.playSound) SoundUtils.playPlingSound()
+
+        if (!SystemTray.isSupported()) {
+            ChatUtils.chat("§cSystem Tray is not supported on this system, notifications will not be shown.")
+            return
+        }
+
+        if (!config.systemTrayNotifications) return
+
+        val tray = SystemTray.getSystemTray()
+
+        // src/main/resources/assets/skyhanni/logo.png
+        val image = Toolkit.getDefaultToolkit().createImage(javaClass.getResource("/assets/skyhanni/logo.png"))
+        val trayIcon = TrayIcon(image, "Notification").apply {
+            isImageAutoSize = true
+            toolTip = "System Notification"
+        }
+
+        try {
+            tray.add(trayIcon)
+            trayIcon.displayMessage(
+                "SkyHanni Mining Notification",
+                type.notification,
+                TrayIcon.MessageType.INFO
+            )
+        } catch (e: Exception) {
+            ErrorManager.logErrorStateWithData(
+                "Failed to display system tray notification!",
+                "system tray notification error",
+                "type" to type,
+                "message" to e.message
+            )
+        }
     }
 }
