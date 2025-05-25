@@ -62,10 +62,14 @@ object CorpseLocator {
                     ),
                 )
 
-                RenderLivingEntityHelper.setEntityChams(entity) { true }
-                RenderLivingEntityHelper.setEntityEsp(entity) { true }
+                if (config.corpseChams) {
+                    RenderLivingEntityHelper.setEntityChams(entity) { true }
+                }
+                if (config.espBox) {
+                    RenderLivingEntityHelper.setEntityEsp(entity) { true }
+                }
 
-                if (corpseType == MineshaftWaypointType.VANGUARD) {
+                if (corpseType == MineshaftWaypointType.VANGUARD && config.rainbowVanguards) {
                     RenderLivingEntityHelper.setEntityColorWithNoHurtTimeChroma(
                         entity
                     ) { true }

@@ -97,12 +97,12 @@ object UpdateManager {
                 if (it.isUpdateAvailable) {
                     updateState = UpdateState.AVAILABLE
                     if (config.fullAutoUpdates || forceDownload) {
-                        ChatUtils.chat("§aSkyHanni found a new update: ${it.update.versionName}, starting to download now.")
-                        queueUpdate()
+                        ChatUtils.chat("§aSkyHanni found a new update: ${it.update.versionName}, Plastic will update shortly.")
+                        // queueUpdate()
                     } else if (config.autoUpdates) {
                         ChatUtils.chatAndOpenConfig(
                             "§aSkyHanni found a new update: ${it.update.versionName}. " +
-                                "Check §b/sh download update §afor more info.",
+                                "Plastic will update shortly.",
                             config::autoUpdates,
                         )
                     }

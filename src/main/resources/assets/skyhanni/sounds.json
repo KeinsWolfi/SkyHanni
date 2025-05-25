@@ -7,5 +7,68 @@
                 "stream": false
             }
         ]
+    },
+    "dropsounds.gigachad": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "feesh_giga-chad",
+                "stream": false
+            }
+        ]
+    },
+    "dropsounds.goofylaugh": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "feesh_goofy-laugh",
+                "stream": false
+            }
+        ]
+    },
+    "dropsounds.insane": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "feesh_insane",
+                "stream": false
+            }
+        ]
+    },
+    "dropsounds.minecraftchallengecompleted": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "feesh_minecraft-challenge-completed",
+                "stream": false
+            }
+        ]
+    },
+    "dropsounds.ohmygod": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "feesh_oh-my-god",
+                "stream": false
+            }
+        ]
+    },
+    "dropsounds.sadtrombone": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "feesh_sad-trombone",
+                "stream": false
+            }
+        ]
+    },
+    "dropsounds.richmillionaire": {
+        "category": "neutral",
+        "sounds": [
+            {
+                "name": "youtube_pqBcT3L4iXo_audio",
+                "stream": false
+            }
+        ]
     }
 }

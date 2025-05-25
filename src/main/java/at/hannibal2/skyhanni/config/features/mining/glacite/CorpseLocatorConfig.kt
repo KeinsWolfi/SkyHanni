@@ -19,4 +19,28 @@ class CorpseLocatorConfig {
     )
     @ConfigEditorBoolean
     var autoSendLocation: Boolean = false
+
+    @Expose
+    @ConfigOption(
+        name = "Esp Box around Corpses",
+        desc = "Draws a box around corpses"
+    )
+    @ConfigEditorBoolean
+    var espBox: Boolean = true
+
+    @Expose
+    @ConfigOption(
+        name = "Corpse Chams",
+        desc = "Renders corpses through walls"
+    )
+    @ConfigEditorBoolean
+    var corpseChams: Boolean = true
+
+    @Expose
+    @ConfigOption(
+        name = "Rainbow Vanguards",
+        desc = "Makes the vanguard corpses rainbow colored."
+    )
+    @ConfigEditorBoolean
+    var rainbowVanguards: Boolean = true
 }

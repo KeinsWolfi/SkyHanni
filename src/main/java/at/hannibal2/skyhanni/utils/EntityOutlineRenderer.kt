@@ -126,7 +126,11 @@ object EntityOutlineRenderer {
 
                 try {
                     if (key !is EntityLivingBase) outlineColor(value)
-                    renderManager.renderEntityStatic(key, partialTicks, true)
+                    if (key is EntitySlime && key.isInvisible) {
+                        key.isInvisible = false
+                        renderManager.renderEntityStatic(key, partialTicks, true)
+                        key.isInvisible = true
+                    } else renderManager.renderEntityStatic(key, partialTicks, true)
                 } catch (ignored: Exception) {
                 }
             }

@@ -9,13 +9,18 @@ import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.NeuInternalName
+import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
+import at.hannibal2.skyhanni.utils.SoundUtils
+import at.hannibal2.skyhanni.utils.SoundUtils.playSound
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 
 @SkyHanniModule
 object ProfitPerMineshaftCorpse {
     private val config get() = SkyHanniMod.feature.mining.mineshaft
+
+    private val config2 get() = SkyHanniMod.feature.mining.glaciteMineshaft.corpseTracker
 
     @HandleEvent
     fun onCorpseLooted(event: CorpseLootedEvent) {
@@ -32,6 +37,12 @@ object ProfitPerMineshaftCorpse {
             val text = "§eFound $name §8${amount.addSeparators()}x §7(§6${profit.shortFormat()}§7)"
             map[text] = profit
             totalProfit += profit
+
+            if (internalName == "SHATTERED_PENDANT".toInternalName()) {
+                if (config2.playLocketSound) {
+                    config2.dropSound.playSound()
+                }
+            }
         }
 
         val corpseType = event.corpseType
@@ -51,5 +62,11 @@ object ProfitPerMineshaftCorpse {
         hover.add("")
         hover.add("§e$totalMessage")
         ChatUtils.hoverableChat(totalMessage, hover)
+
+        if (config2.funnyLapisThingy) {
+            if (corpseType == CorpseType.LAPIS && totalProfit > config2.secretNumber) {
+                SoundUtils.dropSoundRichMillionaire.playSound()
+            }
+        }
     }
 }

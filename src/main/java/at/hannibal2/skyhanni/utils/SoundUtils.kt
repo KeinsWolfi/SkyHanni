@@ -22,6 +22,13 @@ object SoundUtils {
     private val errorSound by lazy { createSound("mob.endermen.portal", 0f) }
     val plingSound by lazy { createSound("note.pling", 1f) }
     val centuryActiveTimerAlert by lazy { createSound("skyhanni:centurytimer.active", 1f) }
+    val dropSoundGigaChad by lazy { createSound("skyhanni:dropsounds.gigachad", 1f) }
+    val dropSoundGoofyLaugh by lazy { createSound("skyhanni:dropsounds.goofylaugh", 1f) }
+    val dropSoundInsane by lazy { createSound("skyhanni:dropsounds.insane", 1f) }
+    val dropSoundMinecraftChallengeCompleted by lazy { createSound("skyhanni:dropsounds.minecraftchallengecompleted", 1f) }
+    val dropSoundOhMyGod by lazy { createSound("skyhanni:dropsounds.ohmygod", 1f) }
+    val dropSoundSadTrombone by lazy { createSound("skyhanni:dropsounds.sadtrombone", 1f) }
+    val dropSoundRichMillionaire by lazy { createSound("skyhanni:dropsounds.richmillionaire", 1f) }
 
     fun ISound.playSound() {
         DelayedRun.onThread.execute {
