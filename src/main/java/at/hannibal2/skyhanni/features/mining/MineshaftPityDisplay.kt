@@ -21,6 +21,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderDisplayHelper
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.chat.TextHelper
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
@@ -151,6 +152,13 @@ object MineshaftPityDisplay {
             }
 
             if (config.modifyChatMessage) event.chatComponent = newComponent
+
+            if (!config.systemTrayNotifications) return
+
+            SystemNotificationsUtils.showNotification(
+                "Mineshaft Spawned",
+                "A new Mineshaft has spawned! Pity Counter: $counterUntilPity"
+            )
         }
     }
 

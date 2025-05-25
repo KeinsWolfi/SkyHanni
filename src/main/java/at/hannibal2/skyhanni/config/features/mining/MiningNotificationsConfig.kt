@@ -38,15 +38,6 @@ class MiningNotificationsConfig {
     var playSound: Boolean = true
 
     @Expose
-    @ConfigOption(
-        name = "Systam Tray Notifications",
-        desc = "Shows a notification in the system tray when a notification is triggered. " +
-            "§cOnly works if your system supports this."
-    )
-    @ConfigEditorBoolean
-    var systemTrayNotifications: Boolean = true
-
-    @Expose
     @ConfigOption(name = "Cold Threshold", desc = "Change when the Cold notification gets triggered.")
     @ConfigEditorSlider(minValue = 1f, maxValue = 100f, minStep = 1f)
     var coldThreshold: Property<Int> = Property.of(50)

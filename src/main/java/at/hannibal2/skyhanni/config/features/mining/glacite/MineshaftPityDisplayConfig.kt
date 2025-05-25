@@ -43,4 +43,13 @@ class MineshaftPityDisplayConfig {
     @Expose
     @ConfigLink(owner = MineshaftPityDisplayConfig::class, field = "enabled")
     var position: Position = Position(16, 192)
+
+    @Expose
+    @ConfigOption(
+        name = "Systam Tray Notifications",
+        desc = "Shows a notification in the system tray when a notification is triggered. " +
+            "§cOnly works if your system supports this."
+    )
+    @ConfigEditorBoolean
+    var systemTrayNotifications: Boolean = true
 }

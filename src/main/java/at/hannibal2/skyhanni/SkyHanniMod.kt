@@ -45,10 +45,22 @@ import net.minecraft.client.gui.GuiScreen
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.awt.SystemTray
+import java.awt.Toolkit
+import java.awt.TrayIcon
 
 // todo 1.21 impl needed
 @SkyHanniModule
 object SkyHanniMod {
+
+    val tray = SystemTray.getSystemTray()
+
+    // src/main/resources/assets/skyhanni/logo.png
+    val image = Toolkit.getDefaultToolkit().createImage(javaClass.getResource("/assets/skyhanni/logo.png"))
+    val trayIcon = TrayIcon(image, "Notification").apply {
+        isImageAutoSize = true
+        toolTip = "System Notification"
+    }
 
     fun preInit() {
         PlatformUtils.checkIfNeuIsLoaded()
@@ -77,6 +89,17 @@ object SkyHanniMod {
             RepoManager.initRepo()
         } catch (e: Exception) {
             Exception("Error reading repo data", e).printStackTrace()
+        }
+
+        try {
+            tray.add(trayIcon)
+        } catch (e: Exception) {
+            ErrorManager.logErrorStateWithData(
+                "Failed to add system tray icon!",
+                "system tray icon error",
+                "type" to "type",
+                "message" to e.message,
+            )
         }
         //#endif
     }
