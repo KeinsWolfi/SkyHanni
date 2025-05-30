@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.webhook
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import com.google.gson.annotations.SerializedName
+import net.minecraft.client.Minecraft
 
 private val config get() = SkyHanniMod.feature.webhook
 
@@ -20,7 +21,7 @@ data class DiscordEmbed(
     val provider: EmbedProvider? = null,
     val author: EmbedAuthor? = EmbedAuthor(
         name = if (config.usernameInEmbeds) {
-            MinecraftCompat.localPlayer.name
+            MinecraftCompat.localPlayerOrNull?.name ?: "Player"
         } else {
             ""
         },
