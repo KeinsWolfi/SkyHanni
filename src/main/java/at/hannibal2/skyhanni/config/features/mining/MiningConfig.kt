@@ -111,6 +111,11 @@ class MiningConfig {
     var flowstateHelper: FlowstateHelperConfig = FlowstateHelperConfig()
 
     @Expose
+    @ConfigOption(name = "Pickobulous Display", desc = "")
+    @Accordion
+    var pickobulusDisplayConfig: PickobulusDisplayConfig = PickobulusDisplayConfig()
+
+    @Expose
     @ConfigOption(name = "Highlight Commission Mobs", desc = "Highlight mobs that are part of active commissions.")
     @ConfigEditorBoolean
     @FeatureToggle
