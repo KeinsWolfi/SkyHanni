@@ -2,14 +2,17 @@ package at.hannibal2.skyhanni.config.features.mining.glacite
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.core.config.Position
+import at.hannibal2.skyhanni.features.mining.glacitemineshaft.CorpseType
 import at.hannibal2.skyhanni.features.mining.glacitemineshaft.DropSound
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
+import io.github.notenoughupdates.moulconfig.observer.Property
 
 class CorpseTrackerConfig {
     @Expose
@@ -26,6 +29,32 @@ class CorpseTrackerConfig {
     @Expose
     @ConfigLink(owner = CorpseTrackerConfig::class, field = "enabled")
     var position: Position = Position(-274, 0)
+
+    @Expose
+    @ConfigOption(
+        name = "Send webhook on Corpse Loot",
+        desc = "Send a Discord webhook when you loot a Corpse in the Glacite Mineshaft.\n" +
+            "Remember to set your webhook URL in the webhook settings!"
+    )
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var sendWebhookOnCorpseLoot: Boolean = false
+
+    @Expose
+    @ConfigOption(
+        name = "Corpse Webhook Types",
+        desc = "The types of corpses to send webhooks for.\n" +
+            "You can select multiple types."
+    )
+    @ConfigEditorDraggableList
+    var corpseWebhookTypes: Property<MutableList<CorpseType>> = Property.of(
+        mutableListOf(
+            CorpseType.VANGUARD,
+            CorpseType.LAPIS,
+            CorpseType.TUNGSTEN,
+            CorpseType.UMBER
+        )
+    )
 
     @Expose
     @ConfigOption(

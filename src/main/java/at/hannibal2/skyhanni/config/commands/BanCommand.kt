@@ -8,8 +8,7 @@ import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
 object BanCommand {
     @HandleEvent
     fun onCommandRegistration(event: CommandRegistrationEvent) {
-        event.register("shtestserverdisconnect")
-        {
+        event.register("shtestserverdisconnect") {
             description = "Simulates a server disconnect"
             category = CommandCategory.DEVELOPER_TEST
             callback { SkyHanniDebugsAndTests.simulateServerDisconnect(it) }
