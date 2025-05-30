@@ -1,15 +1,22 @@
 package at.hannibal2.skyhanni.utils
 
+import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
+import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.StringUtils.toDashlessUUID
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.client.Minecraft
 import java.util.UUID
+import kotlin.time.Duration.Companion.minutes
 
 //#if MC > 1.21
 //$$ import net.minecraft.entity.attribute.EntityAttributes
 //#endif
 
+@SkyHanniModule
 object PlayerUtils {
+
+    var lastAction: SimpleTimeMark = SimpleTimeMark.farPast()
 
     // thirdPersonView on 1.8.9
     // 0 == normal
@@ -54,4 +61,11 @@ object PlayerUtils {
     fun getRawUuid(): UUID = MinecraftCompat.localPlayer.uniqueID
 
     fun getName(): String = MinecraftCompat.localPlayer.name
+
+    @HandleEvent
+    fun onKeyPress(event: KeyPressEvent) {
+        lastAction = SimpleTimeMark.now()
+    }
+
+    val isAFK = lastAction.passedSince() > 5.minutes
 }

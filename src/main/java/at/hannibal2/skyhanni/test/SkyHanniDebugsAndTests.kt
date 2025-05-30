@@ -24,6 +24,7 @@ import at.hannibal2.skyhanni.features.garden.visitor.GardenVisitorColorNames
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getBazaarData
 import at.hannibal2.skyhanni.features.mining.OreBlock
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.BlockUtils
 import at.hannibal2.skyhanni.utils.BlockUtils.getBlockStateAt
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -74,6 +75,9 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.network.play.server.S40PacketDisconnect
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.IChatComponent
 import net.minecraftforge.common.MinecraftForge
 import java.io.File
 import java.time.LocalDate
@@ -534,6 +538,52 @@ object SkyHanniDebugsAndTests {
             config.debugPos.renderString("test: $displayLine", posLabel = "Test")
         }
         config.debugPos.renderRenderables(displayList, posLabel = "Test Display")
+    }
+
+    fun simulateServerDisconnect(args: Array<String>) {
+        val mutArgs = args.toMutableList()
+
+        val tag = mutArgs.getOrNull(0)
+        when (tag) {
+            "-permaban", "-30d", "-90d", "-360d" -> mutArgs.removeAt(0)
+        }
+
+        val reason = if (mutArgs.isNotEmpty()) mutArgs.joinToString(" ")
+        else "Cheating through the use of unfair game advantages"
+
+        val component = when (tag) {
+            "-permaban" -> createBanScreen("permanent", reason)
+            "-30d" -> createBanScreen("29d 23h 59m 59s", reason)
+            "-90d" -> createBanScreen("89d 23h 59m 59s", reason)
+            "-360d" -> createBanScreen("359d 23h 59m 59s", reason)
+            else -> ChatComponentText(reason)
+        }
+
+        try {
+            Minecraft.getMinecraft().netHandler.networkManager.channelRead(null, S40PacketDisconnect(component))
+        } catch (e: Exception) {
+            ErrorManager.logErrorStateWithData(
+                "Error while disconnecting from server.",
+                "Error while disconnecting",
+                "tag" to tag,
+                "reason" to reason,
+            )
+        }
+    }
+
+    fun createBanScreen(
+        duration: String = "29d 23h 59m 59s",
+        reason: String,
+    ): IChatComponent {
+        val component = if (duration == "permanent") ChatComponentText("\u00a7cYou are permanently banned from this server!")
+        else ChatComponentText("\u00a7cYou are temporarily banned for §r$duration §r§cfor from this server!")
+        component.appendText("\n")
+        component.appendText("\n\u00a77Reason: \u00a7r$reason")
+        component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal")
+        component.appendText("\n")
+        component.appendText("\n\u00a77Ban ID: \u00a7r#49871982")
+        component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!")
+        return component
     }
 
     @HandleEvent(GuiRenderEvent.ChestGuiOverlayRenderEvent::class)

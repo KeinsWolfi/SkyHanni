@@ -17,6 +17,7 @@ import at.hannibal2.skyhanni.config.features.misc.MiscConfig
 import at.hannibal2.skyhanni.config.features.rift.RiftConfig
 import at.hannibal2.skyhanni.config.features.skillprogress.SkillProgressConfig
 import at.hannibal2.skyhanni.config.features.slayer.SlayerConfig
+import at.hannibal2.skyhanni.config.features.webhooks.WebhookConfig
 //#if TODO
 import at.hannibal2.skyhanni.config.storage.Storage
 import at.hannibal2.skyhanni.utils.LorenzUtils.isAprilFoolsDay
@@ -139,6 +140,12 @@ class Features : Config() {
     @Expose
     @Category(name = "Misc", desc = "Settings without a category.")
     var misc: MiscConfig = MiscConfig()
+
+    @Expose
+    @Category(
+        name = "Webhook", desc = "General Webhook settings."
+    )
+    var webhook: WebhookConfig = WebhookConfig()
 
     // Bottom
     @Expose
