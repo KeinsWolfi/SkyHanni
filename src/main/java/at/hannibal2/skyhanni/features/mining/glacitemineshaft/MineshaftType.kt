@@ -97,14 +97,11 @@ object MineshaftType {
             }
 
             sinceVang++
+            val mineshaftText = if (sinceVang == 1) "mineshaft" else "mineshafts"
             ChatUtils.chat(
-                LorenzColor.RED.getChatColor() +
-                    "$sinceVang " +
-                    LorenzColor.YELLOW.getChatColor() +
-                    if (sinceVang == 1) "mineshaft " else "mineshafts " +
-                        "since " +
-                        LorenzColor.WHITE.getChatColor() +
-                        "Vanguard"
+                "${LorenzColor.RED.getChatColor()}$sinceVang" +
+                    " ${LorenzColor.YELLOW.getChatColor()}$mineshaftText" +
+                    " since ${LorenzColor.WHITE.getChatColor()}Vanguard"
             )
         }
 
