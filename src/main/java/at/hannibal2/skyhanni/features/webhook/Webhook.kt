@@ -22,9 +22,9 @@ data class Webhook(
     val components: List<Any>? = null,
     @SerializedName("thread_name") val threadName: String? = null
 ) {
-    fun sendTo(webhookUrl: String = config.webhookUrl) {
+    fun sendTo(webhookUrlToSend: String = config.webhookUrl) {
         val feature: KMutableProperty0<*>
-        if (webhookUrl.isEmpty()) {
+        if (webhookUrlToSend.isEmpty()) {
             feature = config::webhookUrl
             ChatUtils.clickableChat(
                 "§cWebhook URL is empty! Click to set it.",
@@ -40,10 +40,10 @@ data class Webhook(
         }
 
         val jsonPayload = Gson().toJson(this)
-        println("Sending JSON: $jsonPayload")
+        // println("Sending JSON: $jsonPayload")
 
         Thread {
-            ApiUtils.postJSON(webhookUrl, jsonPayload, "Discord Webhook")
+            ApiUtils.postJSON(webhookUrlToSend, jsonPayload, "Discord Webhook")
         }.start()
     }
 

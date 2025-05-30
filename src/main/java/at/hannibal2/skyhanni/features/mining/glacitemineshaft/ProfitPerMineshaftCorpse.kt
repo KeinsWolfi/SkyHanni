@@ -17,7 +17,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.SoundUtils.playSound
-import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
+import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 
 @SkyHanniModule
@@ -70,16 +70,17 @@ object ProfitPerMineshaftCorpse {
         hover.add("§e$totalMessage")
         ChatUtils.hoverableChat(totalMessage, hover)
 
-        if (corpseType == CorpseType.VANGUARD && config2.sendWebhookOnCorpseLoot) {
+        if (config2.corpseWebhookTypes.get().contains(corpseType) && config2.sendWebhookOnCorpseLoot) {
             val stringBuilder = StringBuilder()
-            map.sorted().forEach {
-                stringBuilder.append("${it.key} (+ ${it.value.shortFormat()})\n")
+            stringBuilder.append("Total profit: **${totalProfit.shortFormat()}**\n")
+            map.sortedDesc().forEach {
+                stringBuilder.append("\n> + ${it.key.removeColor().replace("Found ", "")} ") // (+ ${it.value.shortFormat()})")
             }
             Webhook(
                 content = if (droppedLocket) "@everyone" else ""
             ).addEmbed(
                 DiscordEmbed(
-                    title = "Vanguard Corpse Looted!",
+                    title = "${corpseType.displayName.removeColor()} Corpse Looted!",
                     description = stringBuilder.toString(),
                     timestamp = SimpleTimeMark.now().toString(),
                     color = if (totalProfit < 0) 0xFF4444 else 0xFFAA00,

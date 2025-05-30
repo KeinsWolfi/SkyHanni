@@ -57,6 +57,6 @@ class PickobulusDisplayConfig {
     var showPityGain: Boolean = true
 
     @Expose
-    @ConfigLink(owner = PickobulusDisplayConfig::class, field = "display")
+    @ConfigLink(owner = PickobulusDisplayConfig::class, field = "enabled")
     var displayPosition: Position = Position(120, 40)
 }

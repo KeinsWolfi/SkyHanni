@@ -50,9 +50,6 @@ class CorpseTrackerConfig {
     var corpseWebhookTypes: Property<MutableList<CorpseType>> = Property.of(
         mutableListOf(
             CorpseType.VANGUARD,
-            CorpseType.LAPIS,
-            CorpseType.TUNGSTEN,
-            CorpseType.UMBER
         )
     )
 
