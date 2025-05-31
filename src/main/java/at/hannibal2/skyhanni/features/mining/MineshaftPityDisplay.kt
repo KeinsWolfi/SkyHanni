@@ -14,6 +14,8 @@ import at.hannibal2.skyhanni.events.mining.OreMinedEvent
 import at.hannibal2.skyhanni.features.mining.MineshaftPityDisplay.PityBlock.Companion.getPity
 import at.hannibal2.skyhanni.features.mining.MineshaftPityDisplay.PityBlock.Companion.getPityBlock
 import at.hannibal2.skyhanni.features.mining.OreType.Companion.getOreType
+import at.hannibal2.skyhanni.features.webhook.DiscordEmbed
+import at.hannibal2.skyhanni.features.webhook.Webhook
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
@@ -36,6 +38,7 @@ import net.minecraft.item.ItemStack
 @SkyHanniModule
 object MineshaftPityDisplay {
     private val config get() = SkyHanniMod.feature.mining.mineshaftPityDisplay
+    private val config2 get() = SkyHanniMod.feature.mining.glaciteMineshaft
 
     private val profileStorage get() = ProfileStorageData.profileSpecific?.mining?.mineshaft
 
@@ -145,20 +148,38 @@ object MineshaftPityDisplay {
                 }
             }
 
-            resetCounter()
-
             val newComponent = TextHelper.text(message) {
                 hover = TextHelper.multiline(hoverText)
             }
 
             if (config.modifyChatMessage) event.chatComponent = newComponent
 
-            if (!config.systemTrayNotifications) return
+            if (config.systemTrayNotifications) {
+                SystemNotificationsUtils.showNotification(
+                    "Mineshaft Spawned",
+                    "A new Mineshaft has spawned! Pity Counter: $counterUntilPity"
+                )
+            }
 
-            SystemNotificationsUtils.showNotification(
-                "Mineshaft Spawned",
-                "A new Mineshaft has spawned! Pity Counter: $counterUntilPity"
-            )
+            if (config2.sendWebhookOnMineshaft) {
+                val stringBuilder = StringBuilder()
+                stringBuilder.append("A new Mineshaft has spawned! Pity Counter: **$counterUntilPity** \n")
+
+                if (!lastMineshaftSpawn.isFarPast()) {
+                    stringBuilder.append("Time since Last Mineshaft: **${lastMineshaftSpawn.passedSince().format()}**")
+                }
+
+                Webhook().addEmbed(
+                    DiscordEmbed(
+                        title = "Mineshaft Spawned!",
+                        description = stringBuilder.toString(),
+                        color = 0x44FF44,
+                        timestamp = SimpleTimeMark.now().toString()
+                    )
+                ).sendTo()
+            }
+
+            resetCounter()
         }
     }
 

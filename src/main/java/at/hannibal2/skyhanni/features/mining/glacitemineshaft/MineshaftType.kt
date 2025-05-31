@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.features.mining.glacitemineshaft
 
+import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
@@ -9,6 +10,8 @@ import at.hannibal2.skyhanni.data.hypixel.chat.event.PartyChatEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.features.commands.PartyChatCommands.PartyChatCommand
+import at.hannibal2.skyhanni.features.webhook.DiscordEmbed
+import at.hannibal2.skyhanni.features.webhook.Webhook
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
@@ -20,6 +23,8 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 @SkyHanniModule
 object MineshaftType {
     private var found = false
+
+    private val config get() = SkyHanniMod.feature.mining.glaciteMineshaft
 
     private val profileStorage get() = ProfileStorageData.profileSpecific?.mining?.mineshaft
 
@@ -87,6 +92,18 @@ object MineshaftType {
                     if (sinceVang == 1) "mineshaft " else "mineshafts " +
                         "entered to get a Vanguard."
             )
+
+            if (config.sendWebhookOnVanguardMineshaft) {
+                Webhook().addEmbed(
+                    DiscordEmbed(
+                        title = "Vanguard Mineshaft Found!",
+                        description = "It took **${timeSinceVang.passedSince().format()}**" +
+                            " and **$sinceVang** mineshafts entered to get a Vanguard.",
+                        color = 0xFFFFFF,
+                        timestamp = SimpleTimeMark.now().toString(),
+                    )
+                )
+            }
 
             timeSinceVang = SimpleTimeMark.now()
 

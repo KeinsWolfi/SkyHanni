@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.config.features.mining.glacite
 
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import org.lwjgl.input.Keyboard
@@ -30,4 +31,20 @@ class GlaciteMineshaftConfig {
     )
     @ConfigEditorKeybind(defaultKey = Keyboard.KEY_NONE)
     var shareWaypointLocation: Int = Keyboard.KEY_NONE
+
+    @Expose
+    @ConfigOption(
+        name = "Send Webhook When Entering a Vanguard Mineshaft",
+        desc = "Send a Discord webhook when entering a Vanguard Mineshaft."
+    )
+    @ConfigEditorBoolean
+    var sendWebhookOnVanguardMineshaft: Boolean = false
+
+    @Expose
+    @ConfigOption(
+        name = "Send Webhook When Entering a Mineshaft",
+        desc = "Send a Discord webhook when entering a Mineshaft."
+    )
+    @ConfigEditorBoolean
+    var sendWebhookOnMineshaft: Boolean = false
 }
