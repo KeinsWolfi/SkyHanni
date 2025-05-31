@@ -102,7 +102,7 @@ object MineshaftType {
                         color = 0xFFFFFF,
                         timestamp = SimpleTimeMark.now().toString(),
                     )
-                )
+                ).sendTo()
             }
 
             timeSinceVang = SimpleTimeMark.now()
