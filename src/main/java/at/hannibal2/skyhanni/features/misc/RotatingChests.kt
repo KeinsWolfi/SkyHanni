@@ -2,17 +2,13 @@ package at.hannibal2.skyhanni.features.misc
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.features.misc.cosmetic.RotatingChestConfig
 import at.hannibal2.skyhanni.events.render.RenderChestEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
-import kotlin.math.max
 import kotlin.random.Random
 
 @SkyHanniModule
@@ -33,7 +29,7 @@ object RotatingChests {
         if (!event.chest.hasWorldObj()) return
 
         when (event) {
-            is RenderChestEvent.Pre  -> onPre(event)
+            is RenderChestEvent.Pre -> onPre(event)
             is RenderChestEvent.Post -> onPost(event)
         }
     }
@@ -42,7 +38,7 @@ object RotatingChests {
     //  Pre-render: advance state, set ESP, push matrix, apply rotation
     // ──────────────────────────────────────────────────────────────────────────────
     private fun onPre(e: RenderChestEvent.Pre) {
-        val pos   = e.chest.pos
+        val pos = e.chest.pos
         val state = rotationStates.getOrPut(pos) { ChestRotationState() }
         state.advance(config.randomRotation, config.rotationSpeed, config.horizontalRotation, config.verticalRotation)
 
@@ -59,8 +55,8 @@ object RotatingChests {
         val (cx, cy, cz) = e.chest.renderCentre(e.partialTicks)
         GlStateManager.pushMatrix()
         GlStateManager.translate(cx, cy, cz)
-        GlStateManager.rotate(state.yaw,   0f, 1f, 0f)   // Y-axis
-        GlStateManager.rotate(state.pitch, 1f, 0f, 0f)   // X-axis
+        GlStateManager.rotate(state.yaw, 0f, 1f, 0f) // Y-axis
+        GlStateManager.rotate(state.pitch, 1f, 0f, 0f) // X-axis
         GlStateManager.translate(-cx, -cy, -cz)
     }
 
@@ -77,8 +73,8 @@ object RotatingChests {
     private class ChestRotationState {
 
         // current angles (deg) – what we finally add to the matrix
-        var yaw = 0f          // horizontal (Y-axis)
-        var pitch = 0f          // vertical   (X-axis)
+        var yaw = 0f // horizontal (Y-axis)
+        var pitch = 0f // vertical   (X-axis)
 
         // current angular velocity (deg / s)
         private var yawVel = 0f
@@ -116,12 +112,12 @@ object RotatingChests {
 
             } else {
                 // deterministic mode – velocity is whatever the sliders say
-                yawVel   = horizontalRotation
+                yawVel = horizontalRotation
                 pitchVel = verticalRotation
             }
 
             val speedDiv = rotationSpeed.coerceAtLeast(1f)
-            yaw   = (yaw   + yawVel   * dt / speedDiv) % 360f
+            yaw = (yaw + yawVel * dt / speedDiv) % 360f
             pitch = (pitch + pitchVel * dt / speedDiv) % 360f
         }
     }
@@ -144,8 +140,7 @@ object RotatingChests {
      *  *render-space* (the same coordinate system as event.x/y/z). */
     private fun TileEntityChest.renderCentre(partialTicks: Float): Triple<Float, Float, Float> {
         // World position of chest center
-        val neighbor = adjacentChestZNeg ?: adjacentChestZPos
-        ?: adjacentChestXNeg ?: adjacentChestXPos
+        val neighbor = adjacentChestZNeg ?: adjacentChestZPos ?: adjacentChestXNeg ?: adjacentChestXPos
 
         val cxWorld = if (neighbor != null)
             ((pos.x + neighbor.pos.x) / 2.0) + 0.5

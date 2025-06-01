@@ -77,7 +77,7 @@ data class Webhook(
             ChatUtils.clickableChat(
                 "§cWebhook URL is empty! Click to set it.",
                 onClick = { feature.jumpToEditor() },
-                hover   = "§eClick to set the webhook URL in the config."
+                hover = "§eClick to set the webhook URL in the config."
             )
             return
         }
@@ -87,9 +87,9 @@ data class Webhook(
         }
 
         // ─── read the file right now and delete it immediately afterwards ────────────
-        val fileBytes = file.readBytes()          // copy into RAM
-        val fileName  = file.name
-        file.delete()                             // temp file no longer needed on disk
+        val fileBytes = file.readBytes() // copy into RAM
+        val fileName = file.name
+        file.delete() // temp file no longer needed on disk
 
         // ─── make sure the embed references the coming attachment ───────────────────
         embeds = (embeds ?: emptyList()).map { e ->
@@ -99,8 +99,8 @@ data class Webhook(
         }
 
         val payloadJson = Gson().toJson(this)
-        val boundary    = "----SkyHanniBoundary${System.currentTimeMillis()}"
-        val nl          = "\r\n"
+        val boundary = "----SkyHanniBoundary${System.currentTimeMillis()}"
+        val nl = "\r\n"
 
         // ─── launch on the IO dispatcher provided by SkyHanni ────────────────────────
         SkyHanniMod.launchIOCoroutine {
@@ -133,7 +133,7 @@ data class Webhook(
             // Send the request
             val conn = (URL(webhookUrl).openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
-                doOutput      = true
+                doOutput = true
                 setRequestProperty(
                     "User-Agent",
                     "SkyHanni/${SkyHanniMod.VERSION} (+https://github.com/Hannibal002/SkyHanni)"
@@ -145,9 +145,9 @@ data class Webhook(
             try {
                 conn.outputStream.use { it.write(bodyBytes) }
 
-                val code   = conn.responseCode
+                val code = conn.responseCode
                 val stream = if (code in 200..299) conn.inputStream else conn.errorStream
-                val text   = stream?.bufferedReader()?.readText() ?: "<no body>"
+                val text = stream?.bufferedReader()?.readText() ?: "<no body>"
 
                 ChatUtils.debug("Webhook HTTP $code → $text")
             } catch (ex: Exception) {
