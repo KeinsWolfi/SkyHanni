@@ -15,6 +15,7 @@ import at.hannibal2.skyhanni.features.mining.MineshaftPityDisplay.PityBlock.Comp
 import at.hannibal2.skyhanni.features.mining.MineshaftPityDisplay.PityBlock.Companion.getPityBlock
 import at.hannibal2.skyhanni.features.mining.OreType.Companion.getOreType
 import at.hannibal2.skyhanni.features.webhook.DiscordEmbed
+import at.hannibal2.skyhanni.features.webhook.EmbedImage
 import at.hannibal2.skyhanni.features.webhook.Webhook
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
@@ -22,6 +23,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderDisplayHelper
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
+import at.hannibal2.skyhanni.utils.ScreenshotUtil
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
@@ -168,15 +170,18 @@ object MineshaftPityDisplay {
                 if (!lastMineshaftSpawn.isFarPast()) {
                     stringBuilder.append("Time since Last Mineshaft: **${lastMineshaftSpawn.passedSince().format()}**")
                 }
-
-                Webhook().addEmbed(
-                    DiscordEmbed(
-                        title = "Mineshaft Spawned!",
-                        description = stringBuilder.toString(),
-                        color = 0x44FF44,
-                        timestamp = SimpleTimeMark.now().toString()
-                    )
-                ).sendTo()
+                SkyHanniMod.launchIOCoroutine {
+                    val screenShot = ScreenshotUtil.captureScreenshot()
+                    Webhook().addEmbed(
+                        DiscordEmbed(
+                            title = "Mineshaft Spawned!",
+                            description = stringBuilder.toString(),
+                            color = 0x44FF44,
+                            timestamp = SimpleTimeMark.now().toString(),
+                            image = EmbedImage(url = "attachment://${screenShot.fileName}")
+                        )
+                    ).sendWebhookWithFile(file = screenShot.path.toFile())
+                }
             }
 
             resetCounter()
