@@ -170,18 +170,16 @@ object MineshaftPityDisplay {
                 if (!lastMineshaftSpawn.isFarPast()) {
                     stringBuilder.append("Time since Last Mineshaft: **${lastMineshaftSpawn.passedSince().format()}**")
                 }
-                SkyHanniMod.launchIOCoroutine {
-                    val screenShot = ScreenshotUtil.captureScreenshot()
-                    Webhook().addEmbed(
-                        DiscordEmbed(
-                            title = "Mineshaft Spawned!",
-                            description = stringBuilder.toString(),
-                            color = 0x44FF44,
-                            timestamp = SimpleTimeMark.now().toString(),
-                            image = EmbedImage(url = "attachment://${screenShot.fileName}")
-                        )
-                    ).sendWebhookWithFile(file = screenShot.path.toFile())
-                }
+                val screenShot = ScreenshotUtil.captureScreenshot()
+                Webhook().addEmbed(
+                    DiscordEmbed(
+                        title = "Mineshaft Spawned!",
+                        description = stringBuilder.toString(),
+                        color = 0x44FF44,
+                        timestamp = SimpleTimeMark.now().toString(),
+                        image = EmbedImage(url = "attachment://${screenShot.fileName}")
+                    )
+                ).sendWebhookWithFile(file = screenShot.path.toFile())
             }
 
             resetCounter()

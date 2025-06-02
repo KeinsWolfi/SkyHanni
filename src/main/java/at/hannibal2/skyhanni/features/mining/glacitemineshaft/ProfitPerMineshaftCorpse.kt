@@ -75,7 +75,7 @@ object ProfitPerMineshaftCorpse {
         ChatUtils.hoverableChat(totalMessage, hover)
 
         DelayedRun.runDelayed(1.seconds) {
-            ChatUtils.sendMessageToServer(totalMessage)
+            ChatUtils.sendMessageToServer(totalMessage.removeColor())
         }
 
         if (config2.corpseWebhookTypes.get().contains(corpseType) && config2.sendWebhookOnCorpseLoot) {
@@ -85,20 +85,20 @@ object ProfitPerMineshaftCorpse {
                 stringBuilder.append("\n> + ${it.key.removeColor().replace("Found ", "")} ") // (+ ${it.value.shortFormat()})")
             }
 
-            SkyHanniMod.launchIOCoroutine {
-                val screenShot = ScreenshotUtil.captureScreenshot()
-                Webhook(
-                    content = if (droppedLocket) "@everyone" else ""
-                ).addEmbed(
-                    DiscordEmbed(
-                        title = "${corpseType.displayName.removeColor()} Corpse Looted!",
-                        description = stringBuilder.toString(),
-                        timestamp = SimpleTimeMark.now().toString(),
-                        color = if (totalProfit < 0) 0xFF4444 else 0xFFAA00,
-                        image = EmbedImage("attachment://${screenShot.path}"),
-                    )
-                ).sendWebhookWithFile(file = screenShot.path.toFile())
-            }
+
+            val screenShot = ScreenshotUtil.captureScreenshot()
+            Webhook(
+                content = if (droppedLocket) "@everyone" else ""
+            ).addEmbed(
+                DiscordEmbed(
+                    title = "${corpseType.displayName.removeColor()} Corpse Looted!",
+                    description = stringBuilder.toString(),
+                    timestamp = SimpleTimeMark.now().toString(),
+                    color = if (totalProfit < 0) 0xFF4444 else 0xFFAA00,
+                    image = EmbedImage("attachment://${screenShot.fileName}"),
+                )
+            ).sendWebhookWithFile(file = screenShot.path.toFile())
+
         }
 
         if (config2.funnyLapisThingy) {
