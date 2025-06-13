@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.config.features.mining.glacite.TunnelMapsConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.AreaWallsConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.CrystalHighlighterConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.CrystalNucleusTrackerConfig
+import at.hannibal2.skyhanni.config.features.mining.nucleus.PowderChestTimerConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.PowderTrackerConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.StructureScannerConfig
 import com.google.gson.annotations.Expose
@@ -34,6 +35,11 @@ class MiningConfig {
     @ConfigOption(name = "Powder Tracker", desc = "")
     @Accordion
     var powderTracker: PowderTrackerConfig = PowderTrackerConfig()
+
+    @Expose
+    @ConfigOption(name = "Powder Chest Timer", desc = "")
+    @Accordion
+    var powderChestTimer: PowderChestTimerConfig = PowderChestTimerConfig()
 
     @Expose
     @ConfigOption(name = "King Talisman", desc = "")
@@ -124,7 +130,7 @@ class MiningConfig {
     @Expose
     @ConfigOption(
         name = "Names in Core",
-        desc = "Show the names of the 4 areas while in the center of the Crystal Hollows."
+        desc = "Show the names of the 4 areas while in the center of the Crystal Hollows.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -146,7 +152,7 @@ class MiningConfig {
     @Expose
     @ConfigOption(
         name = "Line to your Golden Goblin",
-        desc = "Also makes a line to your goblin. §eNeeds the option above to work."
+        desc = "Also makes a line to your goblin. §eNeeds the option above to work.",
     )
     @ConfigEditorBoolean
     var lineToYourGoldenGoblin: Boolean = false
@@ -156,4 +162,10 @@ class MiningConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var highlightPrecisionMiningParticles: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Mute High Heat", desc = "Mutes the panting sound when above 90 heat in the Magma Fields.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var muteHighHeat: Boolean = true
 }
