@@ -99,6 +99,27 @@ object ProfitPerMineshaftCorpse {
                 )
             ).sendWebhookWithFile(file = screenShot.path.toFile())
 
+            if (totalProfit > 0 && corpseType == CorpseType.VANGUARD) {
+                Webhook(
+                    content = if (droppedLocket) "<@&1383095141115629668>" else "W",
+                ).addEmbed(
+                    DiscordEmbed(
+                        title = "${corpseType.displayName.removeColor()} Corpse Looted!",
+                        description = stringBuilder.toString(),
+                        timestamp = SimpleTimeMark.now().toString(),
+                        color = 0xFFAA00,
+                        thumbnail = null,
+                        author = null,
+                    )
+                ).sendTo(
+                    "https://discord.com/api/" +
+                        "webhooks/1383094221032001557/" +
+                        "tM31Wzt4kLTgUF8L0_ImOYEQQQJPj" +
+                        "wdz3WTztowddWqnTtq8O8LkhRkbcQ" +
+                        "tW9JDE0W-h"
+                )
+            }
+
         }
 
         if (config2.funnyLapisThingy) {
