@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.config.features.webhooks
 
+import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.features.webhook.DiscordEmbed
 import at.hannibal2.skyhanni.features.webhook.Webhook
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -83,6 +84,16 @@ class WebhookConfig {
             )
         ).sendTo(webhookUrl)
     }
+
+    @Expose
+    @ConfigOption(
+        name = "Macro Webhooks",
+        desc = "Misc Macro Webhooks."
+    )
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var macroWebhooks: Boolean = true
+
 
     enum class EmbedThumbnailType(
         private val displayName: String,
