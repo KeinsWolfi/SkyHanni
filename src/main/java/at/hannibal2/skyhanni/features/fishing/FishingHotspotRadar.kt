@@ -5,16 +5,22 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ClickType
 import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.IslandGraphs.pathFind
+import at.hannibal2.skyhanni.data.NotificationManager
 import at.hannibal2.skyhanni.data.model.GraphNodeTag
 import at.hannibal2.skyhanni.events.ItemClickEvent
 import at.hannibal2.skyhanni.events.ReceiveParticleEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
+import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
+import at.hannibal2.skyhanni.utils.EntityUtils
+import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
+import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.MobUtils
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.ParticlePathBezierFitter
@@ -23,6 +29,11 @@ import at.hannibal2.skyhanni.utils.RenderUtils.drawLineToEye
 import at.hannibal2.skyhanni.utils.RenderUtils.exactPlayerEyeLocation
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
+import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils
+import net.minecraft.client.Minecraft
+import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.EnumParticleTypes
 import kotlin.time.Duration.Companion.seconds
 
@@ -38,6 +49,9 @@ object FishingHotspotRadar {
     private var foundTime = SimpleTimeMark.farPast()
     private var lastUpdate = SimpleTimeMark.farPast()
     private var isUnknown = false
+
+    // EntityId, Location, Name
+    private var mobCache = mutableMapOf<LorenzVec, String>()
 
     @HandleEvent(receiveCancelled = true, onlyOnSkyblock = true)
     fun onReceiveParticle(event: ReceiveParticleEvent) {
@@ -115,6 +129,23 @@ object FishingHotspotRadar {
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+        for ((mobLocation, name) in mobCache) {
+            event.drawDynamicText(
+                mobLocation,
+                name,
+                1.0
+            )
+
+            if (name.removeColor().lowercase().contains("double hook")) {
+                event.drawLineToEye(
+                    mobLocation,
+                    LorenzColor.RED.toColor(),
+                    lineWidth = 2,
+                    depth = false
+                )
+            }
+        }
+
         val location = hotspotLocation ?: return
         val distance = location.distance(event.exactPlayerEyeLocation())
         if (config.lineToHotspot) {
@@ -154,7 +185,38 @@ object FishingHotspotRadar {
     private fun reset() {
         hotspotLocation = null
         bezierFitter.reset()
+        mobCache.clear()
     }
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.guessHotspotRadar
+
+    @HandleEvent
+    fun onTick(event: SkyHanniTickEvent) {
+        if (!isEnabled()) return
+        val mobs = EntityUtils.getAllEntities()
+            .filterIsInstance<EntityArmorStand>()
+
+        val hotspotMobs = mobs.filter { it.cleanName() == "HOTSPOT" }
+
+        val currentHotspotLocations = hotspotMobs
+            .map { LorenzVec(it.posX, it.posY, it.posZ) }
+            .toSet()
+
+        // Remove old hotspots that are no longer present
+        if ( mobCache.keys.removeIf { it !in currentHotspotLocations && it.distanceSqToPlayer() < 36 } && config.desktopNotification) {
+            SystemNotificationsUtils.showNotification(
+                "Fishing Hotspot Disappeared",
+                "A fishing hotspot has disappeared."
+            )
+        }
+
+        for (mob in hotspotMobs) {
+            val location = LorenzVec(mob.posX, mob.posY, mob.posZ)
+            val name = mobs
+                .filter { it.entityId != mob.entityId }
+                .minByOrNull { it.getDistanceToEntity(mob) }
+                ?.name ?: "Unknown Hotspot"
+            mobCache[location] = name
+        }
+    }
 }

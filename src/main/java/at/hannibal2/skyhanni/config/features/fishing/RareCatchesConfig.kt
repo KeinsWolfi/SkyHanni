@@ -1,9 +1,14 @@
 package at.hannibal2.skyhanni.config.features.fishing
 
 import at.hannibal2.skyhanni.config.FeatureToggle
+import at.hannibal2.skyhanni.data.jsonobjects.repo.SeaCreatureInfo
+import at.hannibal2.skyhanni.features.fishing.SeaCreature
+import at.hannibal2.skyhanni.features.fishing.SeaCreatureManager
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
+import io.github.notenoughupdates.moulconfig.observer.Property
 
 class RareCatchesConfig {
     @Expose
@@ -22,6 +27,14 @@ class RareCatchesConfig {
     )
     @ConfigEditorBoolean
     var alertOtherCatches: Boolean = false
+
+    @Expose
+    @ConfigOption(
+        name = "Desktop Notification",
+        desc = "Show a desktop notification when you catch a rare sea creature."
+    )
+    @ConfigEditorBoolean
+    var desktopNotification: Boolean = true
 
     @Expose
     @ConfigOption(

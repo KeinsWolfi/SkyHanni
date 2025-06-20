@@ -16,11 +16,13 @@ import at.hannibal2.skyhanni.utils.EntityUtils.baseMaxHealth
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
+import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.MobUtils.mob
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.StringUtils
+import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
 import at.hannibal2.skyhanni.utils.TimeLimitedSet
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -60,6 +62,13 @@ object SeaCreatureFeatures {
             else "${creature.rarity.chatColorCode}RARE SEA CREATURE!"
             TitleManager.sendTitle(text, duration = 1.5.seconds)
             if (config.playSound) SoundUtils.playBeepSound()
+
+            if (creature.rarity == LorenzRarity.MYTHIC) {
+                SystemNotificationsUtils.showNotification(
+                    "Rare Sea Creature",
+                    "A ${creature.displayName} has spawned nearby!",
+                )
+            }
         }
     }
 

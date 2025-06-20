@@ -117,4 +117,12 @@ class FishingConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var lineToHotspot: Boolean = false
+
+    @Expose
+    @ConfigOption(
+        name = "Desktop Notification",
+        desc = "Shows a desktop notification when a hotspot disappears.",
+    )
+    @ConfigEditorBoolean
+    var desktopNotification: Boolean = true
 }
