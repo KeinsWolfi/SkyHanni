@@ -76,6 +76,7 @@ import at.hannibal2.skyhanni.utils.renderables.addLine
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable
 import at.hannibal2.skyhanni.utils.renderables.toDragItem
 import kotlinx.coroutines.launch
+import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
@@ -540,7 +541,7 @@ object SkyHanniDebugsAndTests {
         reason: String,
     ): IChatComponent {
         val component = if (duration == "permanent") ChatComponentText("\u00a7cYou are permanently banned from this server!")
-        else ChatComponentText("\u00a7cYou are temporarily banned for §r$duration §r§cfor from this server!")
+        else ChatComponentText("\u00a7cYou are temporarily banned for §r$duration §r§cfrom this server!")
         component.appendText("\n")
         component.appendText("\n\u00a77Reason: \u00a7r$reason")
         component.appendText("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal")
