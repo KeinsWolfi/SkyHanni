@@ -68,4 +68,6 @@ object PlayerUtils {
     }
 
     val isAFK = lastAction.passedSince() > 5.minutes
+
+    fun inAir(): Boolean = !MinecraftCompat.localPlayer.onGround
 }
