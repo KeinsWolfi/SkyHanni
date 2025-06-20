@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ClickType
 import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.IslandGraphs.pathFind
-import at.hannibal2.skyhanni.data.NotificationManager
 import at.hannibal2.skyhanni.data.model.GraphNodeTag
 import at.hannibal2.skyhanni.events.ItemClickEvent
 import at.hannibal2.skyhanni.events.ReceiveParticleEvent
@@ -20,7 +19,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
-import at.hannibal2.skyhanni.utils.MobUtils
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.ParticlePathBezierFitter
@@ -31,8 +29,6 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
-import at.hannibal2.skyhanni.utils.render.WorldRenderUtils
-import net.minecraft.client.Minecraft
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.EnumParticleTypes
 import kotlin.time.Duration.Companion.seconds
@@ -203,7 +199,7 @@ object FishingHotspotRadar {
             .toSet()
 
         // Remove old hotspots that are no longer present
-        if ( mobCache.keys.removeIf { it !in currentHotspotLocations && it.distanceSqToPlayer() < 36 } && config.desktopNotification) {
+        if (mobCache.keys.removeIf { it !in currentHotspotLocations && it.distanceSqToPlayer() < 36 } && config.desktopNotification) {
             SystemNotificationsUtils.showNotification(
                 "Fishing Hotspot Disappeared",
                 "A fishing hotspot has disappeared."
