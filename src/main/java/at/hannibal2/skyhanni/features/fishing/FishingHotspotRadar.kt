@@ -29,6 +29,8 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import net.minecraft.client.Minecraft
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.EnumParticleTypes
 import kotlin.time.Duration.Companion.seconds
@@ -46,8 +48,8 @@ object FishingHotspotRadar {
     private var lastUpdate = SimpleTimeMark.farPast()
     private var isUnknown = false
 
-    // EntityId, Location, Name
-    private var mobCache = mutableMapOf<LorenzVec, String>()
+    // Entity ID -> (Location, (Name, FirstSeenTimestampMillis))
+    private var mobCache = mutableMapOf<Int, Pair<LorenzVec, Pair<String, Long>>>()
 
     @HandleEvent(receiveCancelled = true, onlyOnSkyblock = true)
     fun onReceiveParticle(event: ReceiveParticleEvent) {
@@ -125,16 +127,15 @@ object FishingHotspotRadar {
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
-        for ((mobLocation, name) in mobCache) {
-            event.drawDynamicText(
-                mobLocation,
-                name,
-                1.0
-            )
+        for ((_, value) in mobCache) {
+            val (location, nameWithTime) = value
+            val (name, _) = nameWithTime
+
+            event.drawDynamicText(location, name, 1.0)
 
             if (name.removeColor().lowercase().contains("double hook")) {
                 event.drawLineToEye(
-                    mobLocation,
+                    location,
                     LorenzColor.RED.toColor(),
                     lineWidth = 2,
                     depth = false
@@ -189,30 +190,53 @@ object FishingHotspotRadar {
     @HandleEvent
     fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
+
+        val now = System.currentTimeMillis()
+
         val mobs = EntityUtils.getAllEntities()
             .filterIsInstance<EntityArmorStand>()
 
         val hotspotMobs = mobs.filter { it.cleanName() == "HOTSPOT" }
 
-        val currentHotspotLocations = hotspotMobs
-            .map { LorenzVec(it.posX, it.posY, it.posZ) }
-            .toSet()
+        val currentEntityIds = hotspotMobs.map { it.entityId }.toSet()
 
-        // Remove old hotspots that are no longer present
-        if (mobCache.keys.removeIf { it !in currentHotspotLocations && it.distanceSqToPlayer() < 36 } && config.desktopNotification) {
-            SystemNotificationsUtils.showNotification(
-                "Fishing Hotspot Disappeared",
-                "A fishing hotspot has disappeared."
-            )
+        // Remove entries no longer present → send notification
+        val disappearedIds = mobCache.keys - currentEntityIds
+        for (id in disappearedIds) {
+            val (_, a) = mobCache[id] ?: continue
+            val (name, firstSeen) = a
+            if (Minecraft.getMinecraft().thePlayer.getDistanceSq(mobCache[id]!!.first.toBlockPos()) < 36) {
+                if (config.desktopNotification) {
+                    SystemNotificationsUtils.showNotification(
+                        "Fishing Hotspot Disappeared",
+                        "A fishing hotspot has disappeared."
+                    )
+                }
+            }
+            mobCache.remove(id)
         }
 
+        // Remove entries that are too old → no notification
+        mobCache.entries.removeIf { (_, entry) ->
+            val (_, a) = entry
+            val (_, firstSeen) = a
+            now - firstSeen > 2 * 60 * 1000 // 2 minutes
+        }
+
+        // Add/update entities
         for (mob in hotspotMobs) {
+            val id = mob.entityId
             val location = LorenzVec(mob.posX, mob.posY, mob.posZ)
+
             val name = mobs
                 .filter { it.entityId != mob.entityId }
                 .minByOrNull { it.getDistanceToEntity(mob) }
                 ?.name ?: "Unknown Hotspot"
-            mobCache[location] = name
+
+            val firstSeen = mobCache[id]?.second?.second ?: now
+            mobCache[id] = location to (name to firstSeen)
         }
     }
+
+
 }
