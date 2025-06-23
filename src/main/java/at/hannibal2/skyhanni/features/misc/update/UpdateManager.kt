@@ -108,14 +108,12 @@ object UpdateManager {
                                 "Plastic will update shortly.",
                             config::autoUpdates,
                         )
-                        //#if TODO
                         ChatUtils.clickableChat(
                             "§e§lCLICK HERE §r§eto view changes.",
                             onClick = {
                                 ChangelogViewer.showChangelog(SkyHanniMod.VERSION, it.update.versionName)
                             },
                         )
-                        //#endif
                     }
                 } else if (forceDownload) {
                     ChatUtils.chat("§aSkyHanni didn't find a new update.")

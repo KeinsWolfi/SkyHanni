@@ -2,6 +2,8 @@ package at.hannibal2.skyhanni.features.mining
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.commands.CommandCategory
+import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.HotmData
 import at.hannibal2.skyhanni.data.HotmReward
 import at.hannibal2.skyhanni.data.IslandType
@@ -18,6 +20,7 @@ import at.hannibal2.skyhanni.features.webhook.DiscordEmbed
 import at.hannibal2.skyhanni.features.webhook.EmbedImage
 import at.hannibal2.skyhanni.features.webhook.Webhook
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -29,11 +32,11 @@ import at.hannibal2.skyhanni.utils.SystemNotificationsUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.chat.TextHelper
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
+import at.hannibal2.skyhanni.utils.compat.BlockCompat
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat
 import at.hannibal2.skyhanni.utils.compat.hover
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import com.google.gson.annotations.Expose
-import net.minecraft.block.BlockStone
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 
@@ -296,13 +299,21 @@ object MineshaftPityDisplay {
         update()
     }
 
-    fun fullResetCounter() {
-        resetCounter()
-        mineshaftTotalBlocks = 0
-        mineshaftTotalCount = 0
-        sessionMineshafts = 0
-        lastMineshaftSpawn = SimpleTimeMark.farPast()
-        update()
+    @HandleEvent
+    fun onCommandRegistration(event: CommandRegistrationEvent) {
+        event.registerBrigadier("shresetmineshaftpitystats") {
+            description = "Resets the mineshaft pity display stats"
+            category = CommandCategory.USERS_RESET
+            simpleCallback {
+                ChatUtils.chat("Reset the mineshaft pity display stats!")
+                resetCounter()
+                mineshaftTotalBlocks = 0
+                mineshaftTotalCount = 0
+                sessionMineshafts = 0
+                lastMineshaftSpawn = SimpleTimeMark.farPast()
+                update()
+            }
+        }
     }
 
     @HandleEvent
@@ -378,7 +389,7 @@ object MineshaftPityDisplay {
             "Titanium",
             listOf(OreType.TITANIUM),
             8,
-            ItemStack(Blocks.stone, 1, BlockStone.EnumType.DIORITE_SMOOTH.metadata),
+            BlockCompat.createSmoothDiorite(),
         ),
         ;
 

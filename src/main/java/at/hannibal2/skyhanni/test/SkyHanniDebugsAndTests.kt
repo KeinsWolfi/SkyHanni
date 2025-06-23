@@ -18,15 +18,11 @@ import at.hannibal2.skyhanni.events.ReceiveParticleEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipEvent
-//#if TODO
 import at.hannibal2.skyhanni.events.mining.OreMinedEvent
-//#endif
 import at.hannibal2.skyhanni.features.garden.GardenNextJacobContest
 import at.hannibal2.skyhanni.features.garden.visitor.GardenVisitorColorNames
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getBazaarData
-//#if TODO
 import at.hannibal2.skyhanni.features.mining.OreBlock
-//#endif
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.BlockUtils
@@ -483,7 +479,6 @@ object SkyHanniDebugsAndTests {
             }
 
             if (debugConfig.raytracedOreblock) {
-                //#if TODO
                 BlockUtils.getBlockLookingAt(50.0)?.let { pos ->
                     OreBlock.getByStateOrNull(pos.getBlockStateAt())?.let { ore ->
                         config.debugOrePos.renderString(
@@ -492,7 +487,6 @@ object SkyHanniDebugsAndTests {
                         )
                     }
                 }
-                //#endif
             }
         }
 
@@ -621,7 +615,6 @@ object SkyHanniDebugsAndTests {
         )
     }
 
-    //#if TODO
     @HandleEvent(onlyOnSkyblock = true)
     fun onOreMined(event: OreMinedEvent) {
         if (!debugConfig.oreEventMessages) return
@@ -629,7 +622,6 @@ object SkyHanniDebugsAndTests {
         val extraBlocks = event.extraBlocks.map { "${it.key.name}: ${it.value}" }
         ChatUtils.debug("Mined: $originalOre(${extraBlocks.joinToString()})")
     }
-    //#endif
 
     @HandleEvent
     fun onReceiveParticle(event: ReceiveParticleEvent) {
