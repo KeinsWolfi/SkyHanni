@@ -26,8 +26,6 @@ object LeafXray {
     private var wasForaging = false
     private var dirty = false
 
-    private val worldRenderer: WorldRenderer = MinecraftClient.getInstance().worldRenderer
-
     @JvmStatic
     fun getAlpha(state: BlockState, pos: BlockPos?): Int {
         if (!isEnabled()) return 255
@@ -80,6 +78,7 @@ object LeafXray {
     }
 
     private fun refreshChunks() {
-        worldRenderer.reload()
+        val worldRenderer: WorldRenderer? = MinecraftClient.getInstance().worldRenderer
+        worldRenderer?.reload()
     }
 }
