@@ -205,7 +205,12 @@ object FishingHotspotRadar {
         for (id in disappearedIds) {
             val (_, a) = mobCache[id] ?: continue
             val (name, firstSeen) = a
-            if (Minecraft.getMinecraft().thePlayer.getDistanceSq(mobCache[id]!!.first.toBlockPos()) < 36) {
+            //#if MC < 1.21
+            val distance = MinecraftCompat.localPlayer.getDistanceSq(mobCache[id]!!.first.toBlockPos())
+            //#else
+            //$$ val distance = MinecraftCompat.localPlayer.squaredDistanceTo(mobCache[id]!!.first.toBlockPos().toCenterPos())
+            //#endif
+            if (distance < 36) {
                 if (config.desktopNotification) {
                     SystemNotificationsUtils.showNotification(
                         "Fishing Hotspot Disappeared",
@@ -230,7 +235,13 @@ object FishingHotspotRadar {
 
             val name = mobs
                 .filter { it.entityId != mob.entityId }
-                .minByOrNull { it.getDistanceToEntity(mob) }
+                .minByOrNull {
+                    //#if MC < 1.21
+                    it.getDistanceToEntity(mob)
+                    //#else
+                    //$$ it.distanceTo(mob)
+                    //#endif
+                }
                 ?.name ?: "Unknown Hotspot"
 
             val firstSeen = mobCache[id]?.second?.second ?: now

@@ -49,14 +49,9 @@ import java.awt.TrayIcon
 @SkyHanniModule
 object SkyHanniMod {
 
-    val tray = SystemTray.getSystemTray()
+    private var tray: SystemTray? = null
 
-    // src/main/resources/assets/skyhanni/logo.png
-    val image = Toolkit.getDefaultToolkit().createImage(javaClass.getResource("/assets/skyhanni/logo.png"))
-    val trayIcon = TrayIcon(image, "Notification").apply {
-        isImageAutoSize = true
-        toolTip = "System Notification"
-    }
+    var trayIcon: TrayIcon? = null
 
     fun preInit() {
         PlatformUtils.checkIfNeuIsLoaded()
@@ -83,7 +78,14 @@ object SkyHanniMod {
         }
 
         try {
-            tray.add(trayIcon)
+            tray = SystemTray.getSystemTray()
+            // src/main/resources/assets/skyhanni/logo.png
+            val image = Toolkit.getDefaultToolkit().createImage(javaClass.getResource("/assets/skyhanni/logo.png"))
+            trayIcon = TrayIcon(image, "Notification").apply {
+                isImageAutoSize = true
+                toolTip = "System Notification"
+            }
+            tray?.add(trayIcon)
         } catch (e: Exception) {
             ErrorManager.logErrorStateWithData(
                 "Failed to add system tray icon!",
@@ -92,7 +94,6 @@ object SkyHanniMod {
                 "message" to e.message,
             )
         }
-        //#endif
     }
 
     @HandleEvent

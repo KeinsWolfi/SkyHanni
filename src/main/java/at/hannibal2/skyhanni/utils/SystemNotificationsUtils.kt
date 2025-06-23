@@ -13,7 +13,7 @@ object SystemNotificationsUtils {
             return
         }
 
-        SkyHanniMod.trayIcon.displayMessage(
+        SkyHanniMod.trayIcon?.displayMessage(
             title,
             message,
             TrayIcon.MessageType.WARNING

@@ -1,12 +1,17 @@
 package at.hannibal2.skyhanni.features.mining.crystalhollows
 
+import at.hannibal2.skyhanni.utils.compat.BlockCompat
 import net.minecraft.block.Block
+//#if MC < 1.21
 import net.minecraft.block.BlockColored
 import net.minecraft.block.BlockStone
 import net.minecraft.block.BlockStoneBrick
+//#endif
 import net.minecraft.block.properties.PropertyEnum
 import net.minecraft.init.Blocks
+//#if MC < 1.21
 import net.minecraft.item.EnumDyeColor
+//#endif
 import net.minecraft.util.BlockPos
 import java.awt.Color
 
@@ -23,10 +28,17 @@ enum class Structure(
     QUEEN(
         listOf(
             Triple(Blocks.stone, null, null),
+            //#if MC < 1.21
             Triple(Blocks.log2, null, null),
             Triple(Blocks.log2, null, null),
             Triple(Blocks.log2, null, null),
             Triple(Blocks.log2, null, null),
+            //#else
+            //$$ Triple(Blocks.ACACIA_LOG, null, null),
+            //$$ Triple(Blocks.ACACIA_LOG, null, null),
+            //$$ Triple(Blocks.ACACIA_LOG, null, null),
+            //$$ Triple(Blocks.ACACIA_LOG, null, null),
+            //#endif
             Triple(Blocks.cauldron, null, null),
         ),
         StructureType.CH_CRYSTALS,
@@ -40,7 +52,11 @@ enum class Structure(
             Triple(Blocks.quartz_block, null, null),
             Triple(Blocks.quartz_stairs, null, null),
             Triple(Blocks.stone_brick_stairs, null, null),
+            //#if MC < 1.21
             Triple(Blocks.stonebrick, null, null),
+            //#else
+            //$$ Triple(Blocks.STONE_BRICKS, null, null),
+            //#endif
         ),
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.MITHRIL_DEPOSITS,
@@ -55,8 +71,13 @@ enum class Structure(
             Triple(Blocks.cobblestone, null, null),
             Triple(Blocks.cobblestone, null, null),
             Triple(Blocks.stone_stairs, null, null),
+            //#if MC < 1.21
             Triple(Blocks.stone, BlockStone.VARIANT, BlockStone.EnumType.ANDESITE_SMOOTH),
             Triple(Blocks.stone, BlockStone.VARIANT, BlockStone.EnumType.ANDESITE_SMOOTH),
+            //#else
+            //$$ Triple(Blocks.POLISHED_ANDESITE, null, null),
+            //$$ Triple(Blocks.POLISHED_ANDESITE, null, null),
+            //#endif
             Triple(Blocks.dark_oak_stairs, null, null),
         ),
         StructureType.CH_CRYSTALS,
@@ -71,7 +92,11 @@ enum class Structure(
             Triple(Blocks.bedrock, null, null),
             Triple(Blocks.bedrock, null, null),
             Triple(Blocks.bedrock, null, null),
+            //#if MC < 1.21
             Triple(Blocks.stonebrick, BlockStoneBrick.VARIANT, BlockStoneBrick.EnumType.CHISELED),
+            //#else
+            //$$ Triple(Blocks.CHISELED_STONE_BRICKS, null, null),
+            //#endif
         ),
         StructureType.CH_CRYSTALS,
         CrystalHollowsQuarter.JUNGLE,
@@ -81,7 +106,11 @@ enum class Structure(
     ),
     KING(
         listOf(
+            //#if MC < 1.21
             Triple(Blocks.wool, null, null),
+            //#else
+            //$$ Triple(Blocks.WHITE_WOOL, null, null),
+            //#endif
             Triple(Blocks.dark_oak_stairs, null, null),
             Triple(Blocks.dark_oak_stairs, null, null),
             Triple(Blocks.dark_oak_stairs, null, null),
@@ -114,7 +143,11 @@ enum class Structure(
     ),
     FAIRY_GROTTO(
         listOf(
+            //#if MC < 1.21
             Triple(Blocks.stained_glass, BlockColored.COLOR, EnumDyeColor.MAGENTA)
+            //#else
+            //$$ Triple(Blocks.MAGENTA_STAINED_GLASS, null, null)
+            //#endif
         ),
         StructureType.FAIRY_GROTTO,
         CrystalHollowsQuarter.ANY,
@@ -125,11 +158,21 @@ enum class Structure(
     GOLDEN_DRAGON(
         listOf(
             Triple(Blocks.stone, null, null),
+            //#if MC < 1.21
             Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.RED),
             Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.RED),
             Triple(Blocks.stained_hardened_clay, BlockColored.COLOR, EnumDyeColor.RED),
+            //#else
+            //$$ Triple(Blocks.RED_TERRACOTTA, null, null),
+            //$$ Triple(Blocks.RED_TERRACOTTA, null, null),
+            //$$ Triple(Blocks.RED_TERRACOTTA, null, null),
+            //#endif
             Triple(Blocks.skull, null, null),
+            //#if MC < 1.21
             Triple(Blocks.wool, BlockColored.COLOR, EnumDyeColor.RED),
+            //#else
+            //$$ Triple(Blocks.RED_WOOL, null, null),
+            //#endif
         ),
         StructureType.GOLDEN_DRAGON,
         CrystalHollowsQuarter.ANY,
@@ -168,7 +211,7 @@ enum class Structure(
         "§2Corleone Bridge",
         Color(0, 170, 0),
         20, -12, 25,
-    )
+    );
 }
 
 enum class StructureType {

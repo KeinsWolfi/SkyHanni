@@ -6,7 +6,9 @@ import at.hannibal2.skyhanni.events.render.RenderChestEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
+//#if MC < 1.21
 import net.minecraft.tileentity.TileEntityChest
+//#endif
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11
 import kotlin.random.Random
@@ -14,6 +16,7 @@ import kotlin.random.Random
 @SkyHanniModule
 object RotatingChests {
 
+    //#if MC < 1.21
     /** one rotation state per chest that has appeared on-screen */
     private val rotationStates = mutableMapOf<BlockPos, ChestRotationState>()
 
@@ -24,6 +27,7 @@ object RotatingChests {
     // ──────────────────────────────────────────────────────────────────────────────
     @HandleEvent
     fun onChestRender(event: RenderChestEvent) {
+        //#if MC < 1.21
         if (!config.enabled) return
 
         if (!event.chest.hasWorldObj()) return
@@ -32,6 +36,7 @@ object RotatingChests {
             is RenderChestEvent.Pre -> onPre(event)
             is RenderChestEvent.Post -> onPost(event)
         }
+        //#endif
     }
 
     // ──────────────────────────────────────────────────────────────────────────────
@@ -162,4 +167,5 @@ object RotatingChests {
 
         return Triple(rx, ry, rz)
     }
+    //#endif
 }

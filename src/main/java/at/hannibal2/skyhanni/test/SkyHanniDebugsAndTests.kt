@@ -82,6 +82,8 @@ import net.minecraft.network.play.server.S40PacketDisconnect
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.IChatComponent
 import net.minecraftforge.common.MinecraftForge
+//#else
+//$$ import net.minecraft.text.Text
 //#endif
 import java.io.File
 import java.time.LocalDate
@@ -515,11 +517,19 @@ object SkyHanniDebugsAndTests {
             "-30d" -> createBanScreen("29d 23h 59m 59s", reason)
             "-90d" -> createBanScreen("89d 23h 59m 59s", reason)
             "-360d" -> createBanScreen("359d 23h 59m 59s", reason)
+            //#if MC < 1.21
             else -> ChatComponentText(reason)
+            //#else
+            //$$ else -> Text.literal(reason)
+            //#endif
         }
 
         try {
+            //#if MC < 1.21
             Minecraft.getMinecraft().netHandler.networkManager.channelRead(null, S40PacketDisconnect(component))
+            //#else
+            //$$ MinecraftClient.getInstance().networkHandler?.connection?.disconnect(component)
+            //#endif
         } catch (e: Exception) {
             ErrorManager.logErrorStateWithData(
                 "Error while disconnecting from server.",
@@ -534,6 +544,7 @@ object SkyHanniDebugsAndTests {
         duration: String = "29d 23h 59m 59s",
         reason: String,
     ): IChatComponent {
+        //#if MC < 1.21
         val component = if (duration == "permanent") ChatComponentText("\u00a7cYou are permanently banned from this server!")
         else ChatComponentText("\u00a7cYou are temporarily banned for §r$duration §r§cfrom this server!")
         component.appendText("\n")
@@ -542,6 +553,16 @@ object SkyHanniDebugsAndTests {
         component.appendText("\n")
         component.appendText("\n\u00a77Ban ID: \u00a7r#49871982")
         component.appendText("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!")
+        //#else
+        //$$ val component = if (duration == "permanent") Text.literal("\u00a7cYou are permanently banned from this server!")
+        //$$ else Text.literal("\u00a7cYou are temporarily banned for §r$duration §r§cfrom this server!")
+        //$$ component.append("\n")
+        //$$ component.append("\n\u00a77Reason: \u00a7r$reason")
+        //$$ component.append("\n\u00a77Find out more: \u00a7b\u00a7nhttps://www.hypixel.net/appeal")
+        //$$ component.append("\n")
+        //$$ component.append("\n\u00a77Ban ID: \u00a7r#49871982")
+        //$$ component.append("\n\u00a77Sharing your Ban ID may affect the processing of your appeal!")
+        //#endif
         return component
     }
 

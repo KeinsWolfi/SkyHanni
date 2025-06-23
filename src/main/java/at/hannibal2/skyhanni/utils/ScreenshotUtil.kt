@@ -35,7 +35,13 @@ object ScreenshotUtil {
         val mc = Minecraft.getMinecraft()
         val fb: Framebuffer = mc.framebuffer
 
+        //#if MC < 1.21
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, fb.framebufferObject)
+        //#else
+        //$$ val fboField = Framebuffer::class.java.getDeclaredField("framebufferObject")
+        //$$ fboField.isAccessible = true
+        //$$ GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, fboField.getInt(fb))
+        //#endif
 
         val w = fb.framebufferWidth
         val h = fb.framebufferHeight

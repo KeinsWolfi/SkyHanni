@@ -38,22 +38,5 @@ object BanCommand {
                 ).sendWebhookWithFile(file = screenShot.path.toFile())
             }
         }
-        event.register("shgetskulltexture") {
-            description = "Gets the skull texture of the entity youre looking at."
-            category = CommandCategory.DEVELOPER_TEST
-            callback {
-                val entity = Minecraft.getMinecraft().objectMouseOver.entityHit
-                if (entity == null || entity !is EntityArmorStand) {
-                    ChatUtils.chat("§cNo entity under your crosshair or the entity is not an armor stand.")
-                    return@callback
-                }
-                val texture = entity.getStandHelmet()?.getSkullTexture()
-                if (texture == null) {
-                    ChatUtils.chat("§cNo skull texture found for the armor stand.")
-                } else {
-                    ChatUtils.chat("§aSkull texture: §e$texture")
-                }
-            }
-        }
     }
 }

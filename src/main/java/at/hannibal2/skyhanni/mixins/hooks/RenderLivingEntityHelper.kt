@@ -12,8 +12,10 @@ import at.hannibal2.skyhanni.utils.expand
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawEdges
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
+//#if MC < 1.21
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+//#endif
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -147,6 +149,7 @@ object RenderLivingEntityHelper {
         return false
     }
 
+    //#if MC < 1.21
     @SubscribeEvent
     fun onRenderLivingEntities(event: RenderLivingEvent.Pre<*>) {
         val entity = event.entity
@@ -162,6 +165,7 @@ object RenderLivingEntityHelper {
         GlStateManager.depthFunc(GL11.GL_LEQUAL)
         GL11.glPolygonOffset(1.0F, 1100000.0F)
     }
+    //#endif
 
     @HandleEvent
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {

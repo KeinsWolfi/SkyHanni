@@ -9,7 +9,14 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyClicked
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.LorenzVec
+//#if MC < 1.21
 import at.hannibal2.skyhanni.utils.RenderUtils.drawFilledBoundingBox
+//#else
+//$$ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
+//$$ import at.hannibal2.skyhanni.utils.toLorenzVec
+//$$ import net.minecraft.block.BlockState
+//$$ import net.minecraft.block.Blocks
+//#endif
 import at.hannibal2.skyhanni.utils.RenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
@@ -116,6 +123,7 @@ object PickobulusOverlay {
             }
             else -> {
                 predicted.forEach {
+                    //#if MC < 1.21
                     event.drawFilledBoundingBox(
                         AxisAlignedBB(
                             it.add(0.3, 0.3, 0.3),
@@ -124,6 +132,17 @@ object PickobulusOverlay {
                         Color.GRAY,
                         0.5f,
                     )
+                    //#else
+                    //$$ event.drawFilledBoundingBox(
+                    //$$    Box(
+                    //$$        it.toLorenzVec().add(0.3, 0.3, 0.3).toVec3(),
+                    //$$        it.toLorenzVec().add(0.7, 0.7, 0.7).toVec3()
+                    //$$    ),
+                    //$$    Color.GRAY,
+                    //$$    0.5f,
+                    //$$    seeThroughBlocks = true
+                    //$$ )
+                    //#endif
                 }
             }
         }
@@ -223,7 +242,7 @@ object PickobulusOverlay {
             if (c > 0) 1.0 else -1.0
         }
 
-        val base = BlockPos(floor(startPos.xCoord), floor(startPos.yCoord), floor(startPos.zCoord))
+        val base = BlockPos(floor(startPos.xCoord).toInt(), floor(startPos.yCoord).toInt(), floor(startPos.zCoord).toInt())
 
         var result: BlockPos? = null
 
@@ -234,7 +253,11 @@ object PickobulusOverlay {
                 base.z + (indexes[2] * porN[2]).toInt()
             )
 
+            //#if MC < 1.21
             val block = Block.getIdFromBlock(world.getBlockState(pos).block)
+            //#else
+            //$$ val block = Block.getRawIdFromState(world.getBlockState(pos))
+            //#endif
 
             if (block !in throughBlocks) {
                 result = pos
@@ -281,19 +304,35 @@ object PickobulusOverlay {
         return breakList
     }
 
+    //#if MC < 1.21
     private fun initializeWorldCopyAndMetadata(
         x: Int, y: Int, z: Int
     ): Pair<Array<Array<IntArray>>, Array<Array<IntArray>>> {
+    //#else
+    //$$ private fun initializeWorldCopyAndMetadata(
+    //$$     x: Int, y: Int, z: Int
+    //$$ ): Pair<Array<Array<IntArray>>, Array<Array<Array<BlockState>>>> {
+    //#endif
+
         val worldCopy = Array(8) { Array(8) { IntArray(8) } }
+        //#if MC < 1.21
         val metadatas = Array(8) { Array(8) { IntArray(8) } }
+        //#else
+        //$$ val metadatas = Array(8) { Array(8) { Array(8) { Blocks.AIR.defaultState} } }
+        //#endif
 
         repeat(8) { i ->
             repeat(8) { j ->
                 repeat(8) { k ->
                     val blockPos = BlockPos(x + i - 4, y + j - 4, z + k - 4)
                     val block = MinecraftCompat.localWorld.getBlockState(blockPos)
+                    //#if MC < 1.21
                     worldCopy[i][j][k] = Block.getIdFromBlock(block.block)
                     metadatas[i][j][k] = block.block.getMetaFromState(block)
+                    //#else
+                    //$$ worldCopy[i][j][k] = Block.getRawIdFromState(block)
+                    //$$ metadatas[i][j][k] = block
+                    //#endif
                 }
             }
         }
@@ -314,16 +353,23 @@ object PickobulusOverlay {
 
     private fun processBlock(
         x: Int, y: Int, z: Int, i: Int, j: Int, k: Int, mode: Int,
-        worldCopy: Array<Array<IntArray>>, metadatas: Array<Array<IntArray>>,
+        worldCopy: Array<Array<IntArray>>,
+        //#if MC < 1.21
+        metadatas: Array<Array<IntArray>>,
+        //#else
+        //$$ metadatas: Array<Array<Array<BlockState>>>,
+        //#endif
         breakList: MutableList<BlockPos>
     ) {
         val blockId = worldCopy[i][j][k]
         val metadata = metadatas[i][j][k]
 
         when (mode) {
+            //#if MC < 1.21
             0 -> processModeZero(blockId, metadata)
             2 -> if (blockId == 1 && metadata == 0) counts[2] += 1
             3 -> processModeThree(blockId, metadata)
+            //#endif
         }
 
         if (mode >= 2) {
@@ -333,7 +379,9 @@ object PickobulusOverlay {
                 counts[0] += 1
             }
         } else {
+            //#if MC < 1.21
             handleBlockLogic(blockId, metadata, mode, x, y, z, i, j, k, breakList, worldCopy)
+            //#endif
         }
     }
 
