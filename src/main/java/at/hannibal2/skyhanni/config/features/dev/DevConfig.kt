@@ -94,6 +94,12 @@ class DevConfig {
     var fancyContributors: Boolean = true
 
     @Expose
+    @ConfigOption(name = "Contributor Capes", desc = "Makes SkyHanni contributors' capes fancy too.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var contributorCapes: Boolean = true
+
+    @Expose
     @ConfigOption(name = "Contributor Nametags", desc = "Makes SkyHanni contributors' nametags fancy too. ")
     @ConfigEditorBoolean
     @FeatureToggle

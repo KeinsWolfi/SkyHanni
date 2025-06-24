@@ -10,6 +10,7 @@ import at.hannibal2.skyhanni.events.entity.EntityDisplayNameEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.compat.appendComponent
+import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.entity.player.EntityPlayer
 
 @SkyHanniModule
@@ -58,5 +59,13 @@ object ContributorManager {
 
             else -> false
         }
+    }
+
+    fun shouldRenderCustomCape(player: AbstractClientPlayer): Boolean {
+        if (!config.contributorCapes) return false
+        if (!player.isRealPlayer()) return false
+
+        val username = player.name
+        return true // contributors[username.lowercase()]?.let { it.takeIf { it.isAllowed() } } != null
     }
 }
