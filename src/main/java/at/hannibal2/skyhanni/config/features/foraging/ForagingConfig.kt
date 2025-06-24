@@ -66,4 +66,14 @@ class ForagingConfig {
     @ConfigEditorSlider(minValue = 1F, maxValue = 60F, minStep = 1F)
     @OnlyModern
     var leafXrayCooldown: Float = 5F // in seconds, default is 5 seconds
+
+    @Expose
+    @ConfigOption(
+        name = "Auto Reel",
+        desc = "Automatically reels in mobs when they are ready to be reeled in."
+    )
+    @OnlyModern
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var autoReel: Boolean = false
 }
