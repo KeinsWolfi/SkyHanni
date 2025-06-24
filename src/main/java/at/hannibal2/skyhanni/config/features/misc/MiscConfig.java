@@ -52,6 +52,10 @@ public class MiscConfig {
     @Category(name = "Area Navigation", desc = "Helps navigate to different areas on the current island.")
     public AreaNavigationConfig areaNavigation = new AreaNavigationConfig();
 
+    @Expose
+    @Category(name = "Pathfinding", desc = "General settings for Pathfinding/Navigating in different features.")
+    public PathfindConfig pathfinding = new PathfindConfig();
+
     @ConfigOption(name = "Hide Armor", desc = "")
     @Accordion
     @Expose
@@ -432,6 +436,14 @@ public class MiscConfig {
     @ConfigOption(name = "Transparent Tooltips", desc = "Shows item tooltips transparent. This only impacts tooltips shown in SkyHanni GUI's.. §cFUN!")
     @ConfigEditorBoolean
     public boolean transparentTooltips = false;
+
+    @Expose
+    @ConfigOption(name = "Hide Co-op Member Collections", desc = "Hides specific co-op members from collections.\n" +
+        "§eOpen the Historic Members menu (automatic) or use /shedithiddencoopmembers (manual) to update the list."
+    )
+    @ConfigEditorBoolean
+    @FeatureToggle
+    public boolean hideExCoopMembers = false;
 
     @Expose
     @ConfigOption(

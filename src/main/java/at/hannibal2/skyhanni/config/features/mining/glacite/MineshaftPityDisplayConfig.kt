@@ -19,7 +19,7 @@ class MineshaftPityDisplayConfig {
     @Expose
     @ConfigOption(name = "Stats List", desc = "Drag text to change the appearance of the display.")
     @ConfigEditorDraggableList
-    var mineshaftPityLines: MutableList<MineshaftPityLine> = mutableListOf(
+    val mineshaftPityLines: MutableList<MineshaftPityLine> = mutableListOf(
         MineshaftPityLine.TITLE,
         MineshaftPityLine.COUNTER,
         MineshaftPityLine.CHANCE,
@@ -37,7 +37,7 @@ class MineshaftPityDisplayConfig {
 
     @Expose
     @ConfigLink(owner = MineshaftPityDisplayConfig::class, field = "enabled")
-    var position: Position = Position(16, 192)
+    val position: Position = Position(16, 192)
 
     @Expose
     @ConfigOption(
