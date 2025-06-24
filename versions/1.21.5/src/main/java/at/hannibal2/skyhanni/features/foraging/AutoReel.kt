@@ -9,9 +9,11 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
+import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
 import at.hannibal2.skyhanni.utils.MobUtils.mob
 import at.hannibal2.skyhanni.utils.PlayerUtils2
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.entity.decoration.ArmorStandEntity
 import net.minecraft.entity.mob.PhantomEntity
 import kotlin.time.Duration.Companion.seconds
@@ -34,6 +36,7 @@ object AutoReel {
         if (phantomEntities.isEmpty()) return
 
         for (phantom in phantomEntities) {
+            if (MinecraftCompat.localPlayer.distanceTo(phantom) > 10) continue
             val mob = phantom.mob ?: continue
             val reel = mob.getNearestReel()
             if (reel == null || !reel.isReel()) continue
