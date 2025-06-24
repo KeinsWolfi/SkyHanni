@@ -191,6 +191,8 @@ dependencies {
         // on fabric everyone be using the kotlin language mod so we don't need to bundle kotlin ourselves
         modImplementation("net.fabricmc:fabric-language-kotlin:1.13.2+kotlin.2.1.20")
 
+        modCompileOnly("maven.modrinth:sodium:${properties["sodium_version"] as String}") { isTransitive = false }
+
         modImplementation(libs.modmenu)
     }
 
