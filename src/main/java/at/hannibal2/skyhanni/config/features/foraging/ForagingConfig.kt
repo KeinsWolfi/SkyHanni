@@ -3,12 +3,14 @@ package at.hannibal2.skyhanni.config.features.foraging
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.OnlyLegacy
 import at.hannibal2.skyhanni.config.OnlyModern
+import at.hannibal2.skyhanni.config.core.config.Position
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.Category
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
+import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 /**
@@ -76,4 +78,33 @@ class ForagingConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var autoReel: Boolean = false
+    @Expose
+    @ConfigOption(name = "Hideonleaf Highlight", desc = "")
+    @OnlyModern
+    @Accordion
+    var hideonleafHighlight = HideonleafHighlightConfig()
+
+    @Expose
+    @ConfigOption(name = "Foraging Tracker", desc = "")
+    @OnlyModern
+    @Accordion
+    val tracker = ForagingTrackerConfig()
+
+    @Expose
+    @ConfigOption(name = "Lasso Display", desc = "Displays your lasso progress on screen.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var lassoDisplay = true
+
+    @Expose
+    @ConfigOption(name = "Mute Phantoms", desc = "Silences Phantoms in the Galatea.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    @OnlyModern
+    var mutePhantoms = true
+
+    @Expose
+    @ConfigLink(owner = ForagingConfig::class, field = "lassoDisplay")
+    val lassoDisplayPosition: Position = Position(380, 210)
+
 }
