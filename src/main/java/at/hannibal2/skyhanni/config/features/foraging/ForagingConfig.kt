@@ -45,10 +45,9 @@ class ForagingConfig {
     var moongladeBeacon = MoongladeBeaconConfig()
 
     @Expose
-    @ConfigOption(name = "Birries Highlight", desc = "")
     @OnlyModern
-    @Accordion
-    var birriesHighlight = BirriesHighlightConfig()
+    @Category(name = "Foraging Mob Highlights", desc = "Settings for foraging mob highlights")
+    var foragingMobHighlight = ForagingMobHighlightConfig()
 
     @Expose
     @ConfigOption(
@@ -67,7 +66,7 @@ class ForagingConfig {
     )
     @ConfigEditorSlider(minValue = 1F, maxValue = 60F, minStep = 1F)
     @OnlyModern
-    var leafXrayCooldown: Float = 5F // in seconds, default is 5 seconds
+    var leafXrayCooldown: Float = 5F
 
     @Expose
     @ConfigOption(
@@ -78,11 +77,6 @@ class ForagingConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var autoReel: Boolean = false
-    @Expose
-    @ConfigOption(name = "Hideonleaf Highlight", desc = "")
-    @OnlyModern
-    @Accordion
-    var hideonleafHighlight = HideonleafHighlightConfig()
 
     @Expose
     @ConfigOption(name = "Foraging Tracker", desc = "")

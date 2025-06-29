@@ -127,9 +127,9 @@ object RenderLivingEntityHelper {
     fun <T : EntityLivingBase> internalSetColorMultiplier(entity: T, default: Int): Int {
         if (!SkyHanniDebugsAndTests.globalRender) return default
         if (entityColorMap.containsKey(entity)) {
-            val condition = entityColorCondition[entity]!!
+            val condition = entityColorCondition[entity] ?: return default
             if (condition.invoke()) {
-                return entityColorMap[entity]!!.invoke()
+                return entityColorMap[entity]?.invoke() ?: return default
             }
         }
         return default
