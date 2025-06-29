@@ -45,11 +45,10 @@ object InvisibugHighlighter {
         if (!config.enabled) return
 
         for (entity in invisibugEntities) {
-            if (!entity.canBeSeen(32)) continue
-
             event.drawWaypointFilled(
                 entity.getLorenzVec(),
                 config.color.toColor(),
+                seeThroughBlocks = true,
                 extraSize = -0.2
             )
         }
