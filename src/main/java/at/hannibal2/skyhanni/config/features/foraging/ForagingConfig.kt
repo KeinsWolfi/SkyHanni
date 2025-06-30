@@ -33,6 +33,10 @@ class ForagingConfig {
     val hotf: HotfConfig = HotfConfig()
 
     @Expose
+    @Category(name = "Trees", desc = "Settings for big trees found on the foraging islands.")
+    val trees: TreesConfig = TreesConfig()
+
+    @Expose
     @ConfigOption(name = "Foraging Tutorial Quest", desc = "")
     @Accordion
     @OnlyModern
@@ -47,7 +51,7 @@ class ForagingConfig {
     @Expose
     @OnlyModern
     @Category(name = "Foraging Mob Highlights", desc = "Settings for foraging mob highlights")
-    var foragingMobHighlight = ForagingMobHighlightConfig()
+    var mobHighlight = ForagingMobHighlightConfig()
 
     @Expose
     @ConfigOption(
