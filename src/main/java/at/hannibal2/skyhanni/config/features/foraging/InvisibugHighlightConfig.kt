@@ -26,4 +26,10 @@ class InvisibugHighlightConfig {
     @ConfigEditorColour
     @OnlyModern
     var color: ChromaColour = Color.CYAN.toChromaColor()
+
+    @Expose
+    @ConfigOption(name = "Line to Invisibug", desc = "Draws a line to the Invisibug.")
+    @ConfigEditorBoolean
+    @OnlyModern
+    var lineToInvisibug: Boolean = true
 }

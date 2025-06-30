@@ -9,10 +9,10 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.EntityUtils
-import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
 import at.hannibal2.skyhanni.utils.MobUtils.isCompletelyDefault
 import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToEye
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.decoration.ArmorStandEntity
@@ -50,6 +50,15 @@ object InvisibugHighlighter {
                 seeThroughBlocks = true,
                 extraSize = -0.2
             )
+
+            if (config.lineToInvisibug) {
+                event.drawLineToEye(
+                    entity.getLorenzVec(),
+                    config.color.toColor(),
+                    lineWidth = 2,
+                    depth = false
+                )
+            }
         }
     }
 
