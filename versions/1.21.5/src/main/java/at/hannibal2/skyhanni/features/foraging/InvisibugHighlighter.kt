@@ -9,6 +9,7 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.EntityUtils
+import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
 import at.hannibal2.skyhanni.utils.MobUtils.isCompletelyDefault
 import at.hannibal2.skyhanni.utils.getLorenzVec
@@ -20,7 +21,7 @@ import net.minecraft.particle.ParticleTypes
 
 @SkyHanniModule
 object InvisibugHighlighter {
-    val config get() = SkyHanniMod.feature.foraging.mobHighlight.invisibugHighlight
+    private val config get() = SkyHanniMod.feature.foraging.mobHighlight.invisibug
 
     private val invisibugEntities = mutableListOf<LivingEntity>()
 
