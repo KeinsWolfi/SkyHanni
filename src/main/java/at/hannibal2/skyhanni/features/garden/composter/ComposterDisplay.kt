@@ -13,6 +13,8 @@ import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
+import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
+import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStack
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -20,6 +22,7 @@ import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
+import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addNotNull
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addHorizontalSpacer
@@ -85,7 +88,7 @@ object ComposterDisplay {
                 addHorizontalSpacer()
                 addNotNull(DataType.FUEL.labeledWithData(tabListData))
             }
-            addNotNull(DataType.STORED_COMPOST.labeledWithData(tabListData))
+            addNotNull(storedCompost())
             add(composterEmptyTime(composterEmptyTime))
         }
     }
@@ -99,6 +102,26 @@ object ComposterDisplay {
                 addString("§b$format")
             }
         } else Renderable.string("§cOpen Composter Upgrades!")
+    }
+
+    private fun storedCompost(): Renderable? {
+        val rawValue = tabListData[DataType.STORED_COMPOST] ?: return null
+        val matcher = DataType.STORED_COMPOST.pattern.matcher(rawValue)
+
+        if (!matcher.find()) return null
+
+        val compostAmount = matcher.group(1).removeColor()
+        val compostPrice = "COMPOST".toInternalName().getPrice()
+
+        val coinValue = compostAmount.toIntOrNull()?.let { it * compostPrice }
+
+        return Renderable.line {
+            addItemStack(DataType.STORED_COMPOST.displayItem)
+            addString("Stored Compost: $compostAmount")
+            if (config.storedCompostPrice && coinValue != null) {
+                addString(" ($coinValue coins)")
+            }
+        }
     }
 
     private fun readData(tabList: List<String>) {

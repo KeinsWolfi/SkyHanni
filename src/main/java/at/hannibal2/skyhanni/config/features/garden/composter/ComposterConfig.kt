@@ -88,6 +88,14 @@ class ComposterConfig {
     var warnAlmostEmpty: Boolean = false
 
     @Expose
+    @ConfigOption(
+        name = "Stored Compost Price",
+        desc = "Show the price for the stored compost in the Composter Display."
+    )
+    @ConfigEditorBoolean
+    var storedCompostPrice: Boolean = true
+
+    @Expose
     @ConfigOption(name = "Upgrade Price", desc = "Show the price for the Composter Upgrade in the lore.")
     @ConfigEditorBoolean
     @FeatureToggle
