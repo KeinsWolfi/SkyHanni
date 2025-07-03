@@ -3,23 +3,23 @@ package at.hannibal2.skyhanni.mixins.hooks
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.RenderEntityOutlineEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
+import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
-import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
-import net.minecraft.entity.Entity
 import at.hannibal2.skyhanni.utils.SpecialColor.toSpecialColorInt
+import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
 import at.hannibal2.skyhanni.utils.expand
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawEdges
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import org.lwjgl.opengl.GL11
+import java.awt.Color
 //#if MC < 1.21
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 //#endif
-import org.lwjgl.opengl.GL11
-import java.awt.Color
 
 @SkyHanniModule
 object RenderLivingEntityHelper {

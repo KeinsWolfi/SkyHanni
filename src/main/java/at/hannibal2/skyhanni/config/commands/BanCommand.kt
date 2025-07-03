@@ -6,12 +6,7 @@ import at.hannibal2.skyhanni.features.webhook.EmbedImage
 import at.hannibal2.skyhanni.features.webhook.Webhook
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
-import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.ItemUtils.getSkullTexture
 import at.hannibal2.skyhanni.utils.ScreenshotUtil
-import at.hannibal2.skyhanni.utils.compat.getStandHelmet
-import net.minecraft.client.Minecraft
-import net.minecraft.entity.item.EntityArmorStand
 
 @SkyHanniModule
 object BanCommand {

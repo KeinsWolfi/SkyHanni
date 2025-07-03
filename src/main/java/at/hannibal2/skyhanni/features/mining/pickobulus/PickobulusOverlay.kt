@@ -308,11 +308,11 @@ object PickobulusOverlay {
     private fun initializeWorldCopyAndMetadata(
         x: Int, y: Int, z: Int
     ): Pair<Array<Array<IntArray>>, Array<Array<IntArray>>> {
-    //#else
-    //$$ private fun initializeWorldCopyAndMetadata(
-    //$$     x: Int, y: Int, z: Int
-    //$$ ): Pair<Array<Array<IntArray>>, Array<Array<Array<BlockState>>>> {
-    //#endif
+        //#else
+        //$$ private fun initializeWorldCopyAndMetadata(
+        //$$     x: Int, y: Int, z: Int
+        //$$ ): Pair<Array<Array<IntArray>>, Array<Array<Array<BlockState>>>> {
+        //#endif
 
         val worldCopy = Array(8) { Array(8) { IntArray(8) } }
         //#if MC < 1.21

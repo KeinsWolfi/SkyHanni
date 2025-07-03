@@ -1,6 +1,5 @@
 package at.hannibal2.skyhanni.features.mining.crystalhollows
 
-import at.hannibal2.skyhanni.utils.compat.BlockCompat
 import net.minecraft.block.Block
 //#if MC < 1.21
 import net.minecraft.block.BlockColored
@@ -211,7 +210,7 @@ enum class Structure(
         "§2Corleone Bridge",
         Color(0, 170, 0),
         20, -12, 25,
-    );
+    )
 }
 
 enum class StructureType {

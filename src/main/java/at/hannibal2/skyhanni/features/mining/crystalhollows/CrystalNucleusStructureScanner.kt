@@ -516,7 +516,7 @@ object CrystalNucleusStructureScanner {
             }
         }
     }
-    
+
     fun getChunkPosition(chunk: Chunk, axis: Axis): Int {
         if (axis == Axis.X) {
             //#if MC < 1.21
