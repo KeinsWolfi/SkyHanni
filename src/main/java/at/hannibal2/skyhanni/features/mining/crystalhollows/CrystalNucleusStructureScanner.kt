@@ -24,14 +24,9 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.crash.CrashReport
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing.Axis
-//#if MC < 1.21
 import net.minecraft.util.ReportedException
-//#endif
 import net.minecraft.world.chunk.Chunk
-//#if MC < 1.21
 import net.minecraftforge.client.ClientCommandHandler
-//#endif
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -42,6 +37,7 @@ object CrystalNucleusStructureScanner {
 
     val config get() = SkyHanniMod.feature.mining.structureScannerConfig
 
+    //#if MC < 1.21
     private val blocksToRemoveCoords = listOf(
         Triple(0, 0, -3),
         Triple(0, 1, -3),
@@ -104,19 +100,11 @@ object CrystalNucleusStructureScanner {
         }
 
         fun cacheChunk(chunk: Chunk) {
-            //#if MC < 1.21
-            chunkCache.add(getChunkPosition(chunk, Axis.X) * 65536 + getChunkPosition(chunk, Axis.Z))
-            //#else
-            //$$ chunkCache.add(chunk.pos.x * 65536 + chunk.pos.z)
-            //#endif
+            chunkCache.add(chunk.xPosition * 65536 + chunk.zPosition)
         }
 
         internal fun isChunkCached(chunk: Chunk): Boolean {
-            //#if MC < 1.21
-            return chunkCache.contains(getChunkPosition(chunk, Axis.X) * 65536 + getChunkPosition(chunk, Axis.Z))
-            //#else
-            //$$ return chunkCache.contains(chunk.pos.x * 65536 + chunk.pos.z)
-            //#endif
+            return chunkCache.contains(chunk.xPosition * 65536 + chunk.zPosition)
         }
     }
     private var currentWorld: World = World()
@@ -138,6 +126,7 @@ object CrystalNucleusStructureScanner {
     fun onChunkLoad(event: ChunkLoadEvent) {
         if (!config.enabled) return
         if (cooldown != 0) return
+        // ChatUtils.debug("Scanning chunk ${event.chunk.xPosition}, ${event.chunk.zPosition}")
         if (!currentWorld.isChunkCached(event.chunk)) {
             handleChunkLoad(event.chunk, currentWorld)
             currentWorld.cacheChunk(event.chunk)
@@ -156,22 +145,13 @@ object CrystalNucleusStructureScanner {
         }
         if (cooldown == 0) {
             for (coord in blocksToRemove) {
-                //#if MC < 1.21
                 MinecraftCompat.localWorld.setBlockToAir(
                     coord.toBlockPos()
                 )
-                //#else
-                //$$ MinecraftCompat.localWorld.setBlockState(
-                //$$     coord.toBlockPos(),
-                //$$     Blocks.AIR.defaultState,
-                //$$     3
-                //$$ )
-                //#endif
             }
 
             if (initialScan) return
             initialScan = true
-            //#if MC < 1.21
             val `object`: Any? = ReflectionUtils.field(MinecraftCompat.localWorld.chunkProvider, "field_73237_c")
             if (`object` is List<*>) {
                 ChatUtils.debug("Scanning ${`object`.size} chunks")
@@ -180,7 +160,6 @@ object CrystalNucleusStructureScanner {
                     handleChunkLoad(chunk, currentWorld)
                 }
             }
-            //#endif
         }
     }
 
@@ -196,22 +175,22 @@ object CrystalNucleusStructureScanner {
                                     if (scanStructure(chunk, structure, x, y, z)) {
                                         sendCoordinatesMessage(
                                             structure,
-                                            getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                            chunk.xPosition * 16 + x + structure.offsetX,
                                             y + structure.offsetY,
-                                            getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                            chunk.zPosition * 16 + z + structure.offsetZ,
                                         )
                                         addToSkytilsMap(
                                             structure.displayName,
-                                            getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                            chunk.xPosition * 16 + x + structure.offsetX,
                                             y + structure.offsetY,
-                                            getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                            chunk.zPosition * 16 + z + structure.offsetZ,
                                         )
                                         currentWorld.updateCrystalWaypoints(
                                             structure.displayName,
                                             BlockPos(
-                                                getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                                chunk.xPosition * 16 + x + structure.offsetX,
                                                 y + structure.offsetY,
-                                                getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                                chunk.zPosition * 16 + z + structure.offsetZ,
                                             ),
                                         )
                                         if (structure == Structure.TEMPLE) {
@@ -220,9 +199,9 @@ object CrystalNucleusStructureScanner {
                                                     displayName = "§5Temple Crystal",
                                                     onlyText = false,
                                                     location = LorenzVec(
-                                                        getChunkPosition(chunk, Axis.X) * 16 + x,
+                                                        chunk.xPosition * 16 + x,
                                                         y,
-                                                        getChunkPosition(chunk, Axis.Z) * 16 + z,
+                                                        chunk.zPosition * 16 + z,
                                                     ),
                                                     color = Color(170, 0, 170),
                                                 )
@@ -230,9 +209,9 @@ object CrystalNucleusStructureScanner {
                                             for (coord in blocksToRemoveCoords) {
                                                 blocksToRemove.add(
                                                     LorenzVec(
-                                                        getChunkPosition(chunk, Axis.X) * 16 + x + coord.first,
+                                                        chunk.xPosition * 16 + x + coord.first,
                                                         y + coord.second,
-                                                        getChunkPosition(chunk, Axis.Z) * 16 + z + coord.third
+                                                        chunk.zPosition * 16 + z + coord.third
                                                     )
                                                 )
                                             }
@@ -248,16 +227,16 @@ object CrystalNucleusStructureScanner {
                                 currentWorld.updateMobSpotWaypoints(
                                     structure.displayName,
                                     BlockPos(
-                                        getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                        chunk.xPosition * 16 + x + structure.offsetX,
                                         y + structure.offsetY,
-                                        getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                        chunk.zPosition * 16 + z + structure.offsetZ,
                                     ),
                                 )
                                 sendCoordinatesMessage(
                                     structure,
-                                    getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                    chunk.xPosition * 16 + x + structure.offsetX,
                                     y + structure.offsetY,
-                                    getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                    chunk.zPosition * 16 + z + structure.offsetZ,
                                 )
                                 return
                             }
@@ -267,9 +246,9 @@ object CrystalNucleusStructureScanner {
                             if (scanStructure(chunk, structure, x, y, z)) {
                                 currentWorld.updateFairyGrottos(
                                     BlockPos(
-                                        getChunkPosition(chunk, Axis.X) * 16 + x,
+                                        chunk.xPosition * 16 + x,
                                         y,
-                                        getChunkPosition(chunk, Axis.Z) * 16 + z
+                                        chunk.zPosition * 16 + z
                                     )
                                 )
                             }
@@ -279,16 +258,16 @@ object CrystalNucleusStructureScanner {
                             if (scanStructure(chunk, structure, x, y, z)) {
                                 currentWorld.updateDragonNest(
                                     BlockPos(
-                                        getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                        chunk.xPosition * 16 + x + structure.offsetX,
                                         y + structure.offsetY,
-                                        getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                        chunk.zPosition * 16 + z + structure.offsetZ,
                                     ),
                                 )
                                 sendCoordinatesMessage(
                                     structure,
-                                    getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                    chunk.xPosition * 16 + x + structure.offsetX,
                                     y + structure.offsetY,
-                                    getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                    chunk.zPosition * 16 + z + structure.offsetZ,
                                 )
                                 return
                             }
@@ -298,16 +277,16 @@ object CrystalNucleusStructureScanner {
                             if (scanStructure(chunk, structure, x, y, z)) {
                                 currentWorld.updateDragonNest(
                                     BlockPos(
-                                        getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                        chunk.xPosition * 16 + x + structure.offsetX,
                                         y + structure.offsetY,
-                                        getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                        chunk.zPosition * 16 + z + structure.offsetZ,
                                     ),
                                 )
                                 sendCoordinatesMessage(
                                     structure,
-                                    getChunkPosition(chunk, Axis.X) * 16 + x + structure.offsetX,
+                                    chunk.xPosition * 16 + x + structure.offsetX,
                                     y + structure.offsetY,
-                                    getChunkPosition(chunk, Axis.Z) * 16 + z + structure.offsetZ,
+                                    chunk.zPosition * 16 + z + structure.offsetZ,
                                 )
                                 return
                             }
@@ -349,39 +328,23 @@ object CrystalNucleusStructureScanner {
     }
 
     private fun addToSkytilsMap(name: String, x: Int, y: Int, z: Int) {
-        //#if MC < 1.21
         ClientCommandHandler.instance.executeCommand(
             MinecraftCompat.localPlayer,
             "/sthw set " + internalSkytilsNames[name] + " " + x + " " + y + " " + z,
         )
-        //#endif
     }
 
     private fun scanStructure(chunk: Chunk, structure: Structure, x: Int, y: Int, z: Int): Boolean {
-        if (
-            !structure.quarter.testPredicate(
-                BlockPos(
-                    getChunkPosition(chunk, Axis.X) * 16 + x,
-                    y,
-                    getChunkPosition(chunk, Axis.Z) * 16 + z
-                )
-            )
-        ) {
+        if (!structure.quarter.testPredicate(BlockPos(chunk.xPosition * 16 + x, y, chunk.zPosition * 16 + z))) {
             return false
         }
 
         for (structureY in structure.blocks.indices) { // Use indices to ensure bounds safety
             val triple: Triple<Block, PropertyEnum<*>?, Comparable<*>?> = structure.blocks[structureY]
 
-            //#if MC < 1.21
             if (triple.first != chunk.getBlock(x, y + structureY, z)) {
                 return false
             }
-            //#else
-            //$$ if (triple.first != chunk.getBlockState(BlockPos(x, y + structureY, z)).block) {
-            //$$     return false
-            //$$ }
-            //#endif
 
             if (triple.second != null && triple.third != null && getBlockState(
                     chunk,
@@ -399,7 +362,6 @@ object CrystalNucleusStructureScanner {
 
     private fun getBlockState(chunk: Chunk, x: Int, y: Int, z: Int): IBlockState {
         var iBlockState = Blocks.air.defaultState
-        //#if MC < 1.21
         if (y >= 0 && y shr 4 < chunk.blockStorageArray.size) {
             val extendedblockstorage = chunk.blockStorageArray[y shr 4]
             if (extendedblockstorage != null) {
@@ -411,7 +373,6 @@ object CrystalNucleusStructureScanner {
                 }
             }
         }
-        //#endif
         return iBlockState
     }
 
@@ -463,7 +424,6 @@ object CrystalNucleusStructureScanner {
             description = "Recheck Structures"
             category = CommandCategory.USERS_RESET
             callback {
-                //#if MC < 1.21
                 currentWorld.chunkCache.clear()
                 val `object`: Any? = ReflectionUtils.field(MinecraftCompat.localWorld.chunkProvider, "field_73237_c")
                 if (`object` is List<*>) {
@@ -473,65 +433,29 @@ object CrystalNucleusStructureScanner {
                         handleChunkLoad(chunk, currentWorld)
                     }
                 }
-                //#endif
             }
         }
         event.register("ghostblock") {
             description = "Set Block youre looking at to air."
             category = CommandCategory.MAIN
             callback {
-                //#if MC < 1.21
                 val ray = MinecraftCompat.localPlayer.rayTrace(100.0, 1.0f)
-                //#else
-                //$$ val ray = MinecraftCompat.localPlayer.raycast(100.0, 1.0f, true)
-                //#endif
-                //#if MC < 1.21
                 val blockState: IBlockState = MinecraftCompat.localWorld.getBlockState(ray.blockPos)
-                //#else
-                //$$ val blockState: BlockState = MinecraftCompat.localWorld.getBlockState(LorenzVec(ray.pos.x, ray.pos.y, ray.pos.z).toBlockPos())
-                //#endif
                 val block: Block = blockState.block
                 if (block != Blocks.air) {
                     blocksToRemove.add(
                         LorenzVec(
-                            //#if MC < 1.21
                             ray.blockPos.x,
                             ray.blockPos.y,
                             ray.blockPos.z
-                            //#else
-                            //$$ ray.pos.x,
-                            //$$ ray.pos.y,
-                            //$$ ray.pos.z
-                            //#endif
                         )
                     )
-                    //#if MC < 1.21
                     ChatUtils.chat("Set ${block.localizedName} at ${ray.blockPos.x}, ${ray.blockPos.y}, ${ray.blockPos.z} to air")
-                    //#else
-                    //$$ ChatUtils.chat("Set ${block.name} at ${ray.pos.x}, ${ray.pos.y}, ${ray.pos.z} to air")
-                    //#endif
                 } else {
                     ChatUtils.userError("Block is already air")
                 }
             }
         }
     }
-
-    fun getChunkPosition(chunk: Chunk, axis: Axis): Int {
-        if (axis == Axis.X) {
-            //#if MC < 1.21
-            return getChunkPosition(chunk, Axis.X)
-            //#else
-            //$$ return chunk.pos.x
-            //#endif
-        }
-        if (axis == Axis.Z) {
-            //#if MC < 1.21
-            return getChunkPosition(chunk, Axis.Z)
-            //#else
-            //$$ return chunk.pos.z
-            //#endif
-        }
-        return 0
-    }
+    //#endif
 }
