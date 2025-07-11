@@ -24,13 +24,14 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.crash.CrashReport
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ReportedException
 import net.minecraft.world.chunk.Chunk
-import net.minecraftforge.client.ClientCommandHandler
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-
+//#if MC < 1.21
+import net.minecraft.util.ReportedException
+import net.minecraftforge.client.ClientCommandHandler
+//#endif
 
 @SkyHanniModule
 object CrystalNucleusStructureScanner {
