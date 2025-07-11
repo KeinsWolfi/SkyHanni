@@ -62,7 +62,7 @@ import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addItemS
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
 import at.hannibal2.skyhanni.utils.compat.BlockCompat
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
-import at.hannibal2.skyhanni.utils.compat.slotUnderCursor
+import at.hannibal2.skyhanni.utils.compat.stackUnderCursor
 import at.hannibal2.skyhanni.utils.renderables.DragNDrop
 import at.hannibal2.skyhanni.utils.renderables.Droppable
 import at.hannibal2.skyhanni.utils.renderables.Renderable
@@ -70,6 +70,7 @@ import at.hannibal2.skyhanni.utils.renderables.Renderable.Companion.renderBounds
 import at.hannibal2.skyhanni.utils.renderables.StringRenderable
 import at.hannibal2.skyhanni.utils.renderables.addLine
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable
+import at.hannibal2.skyhanni.utils.renderables.item.ItemStackRenderable
 import at.hannibal2.skyhanni.utils.renderables.toDragItem
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import kotlinx.coroutines.launch
@@ -361,8 +362,7 @@ object SkyHanniDebugsAndTests {
     @HandleEvent(GuiKeyPressEvent::class)
     fun onKeybind() {
         if (!debugConfig.copyInternalName.isKeyHeld()) return
-        val focussedSlot = slotUnderCursor() ?: return
-        val stack = focussedSlot.stack ?: return
+        val stack = stackUnderCursor() ?: return
         val internalName = stack.getInternalNameOrNull() ?: return
         val rawInternalName = internalName.asString()
         OSUtils.copyToClipboard(rawInternalName)
@@ -606,7 +606,7 @@ object SkyHanniDebugsAndTests {
             ItemStack(Blocks.melon_block),
         ).map { item ->
             generateSequence(scale) { it + 0.1 }.take(25).map {
-                Renderable.itemStack(item, it, xSpacing = 0).renderBounds()
+                ItemStackRenderable(item, it, xSpacing = 0).renderBounds()
             }.toList()
         }.editCopy {
             this.add(
@@ -620,7 +620,7 @@ object SkyHanniDebugsAndTests {
                 HorizontalContainerRenderable(
                     listOf(
                         StringRenderable("Test:").renderBounds(),
-                        Renderable.itemStack(ItemStack(Items.diamond_sword)).renderBounds(),
+                        ItemStackRenderable(ItemStack(Items.diamond_sword)).renderBounds(),
                     ),
                     1,
                     RenderUtils.HorizontalAlignment.LEFT, RenderUtils.VerticalAlignment.TOP,

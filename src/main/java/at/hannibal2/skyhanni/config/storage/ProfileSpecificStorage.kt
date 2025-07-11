@@ -735,6 +735,9 @@ class ProfileSpecificStorage(
 
         @Expose
         var crystalNucleusTracker: CrystalNucleusTracker.Data = CrystalNucleusTracker.Data()
+
+        @Expose
+        var flowstatePersonalBest = 0
     }
 
     @Expose
