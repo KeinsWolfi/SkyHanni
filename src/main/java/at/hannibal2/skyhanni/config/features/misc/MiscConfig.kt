@@ -9,6 +9,7 @@ import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.config.features.commands.CommandsConfig
 import at.hannibal2.skyhanni.config.features.garden.NextJacobContestConfig
 import at.hannibal2.skyhanni.config.features.minion.MinionsConfig
+import at.hannibal2.skyhanni.config.features.misc.cosmetic.RotatingChestConfig
 import at.hannibal2.skyhanni.config.features.misc.frogmask.FrogMaskFeaturesConfig
 import at.hannibal2.skyhanni.config.features.pets.PetConfig
 import at.hannibal2.skyhanni.config.features.stranded.StrandedConfig
@@ -153,6 +154,11 @@ class MiscConfig {
     @ConfigOption(name = "Frog Mask Features", desc = "")
     @Accordion
     val frogMaskFeatures: FrogMaskFeaturesConfig = FrogMaskFeaturesConfig()
+
+    @Expose
+    @ConfigOption(name = "Chest Features", desc = "")
+    @Accordion
+    val chestFeatures: RotatingChestConfig = RotatingChestConfig()
 
     @Expose
     @ConfigOption(name = "Reset Search on Close", desc = "Reset the search in GUIs after closing the inventory.")

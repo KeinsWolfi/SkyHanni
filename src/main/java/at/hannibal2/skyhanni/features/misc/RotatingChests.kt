@@ -20,7 +20,7 @@ object RotatingChests {
     /** one rotation state per chest that has appeared on-screen */
     private val rotationStates = mutableMapOf<BlockPos, ChestRotationState>()
 
-    private val config get() = SkyHanniMod.feature.misc.rotatingChest
+    private val config get() = SkyHanniMod.feature.misc.chestFeatures
 
     // ──────────────────────────────────────────────────────────────────────────────
     //  Event bridge – fired by your mixin
