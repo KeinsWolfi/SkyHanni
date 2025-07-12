@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.config.features.mining.glacite.TunnelMapsConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.AreaWallsConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.CrystalHighlighterConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.CrystalNucleusTrackerConfig
+import at.hannibal2.skyhanni.config.features.mining.nucleus.MetalDetectorConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.PowderChestTimerConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.PowderTrackerConfig
 import at.hannibal2.skyhanni.config.features.mining.nucleus.StructureScannerConfig
@@ -70,6 +71,11 @@ class MiningConfig {
     var structureScannerConfig: StructureScannerConfig = StructureScannerConfig()
 
     @Expose
+    @ConfigOption(name = "Metal Detector", desc = "")
+    @Accordion
+    val metalDetector: MetalDetectorConfig = MetalDetectorConfig()
+
+    @Expose
     @ConfigOption(name = "Cold Overlay", desc = "")
     @Accordion
     val coldOverlay: ColdOverlayConfig = ColdOverlayConfig()
@@ -120,6 +126,11 @@ class MiningConfig {
     @ConfigOption(name = "Pickobulous Display", desc = "")
     @Accordion
     var pickobulusDisplayConfig: PickobulusDisplayConfig = PickobulusDisplayConfig()
+
+    @Expose
+    @ConfigOption(name = "Gemstone Money per Hour Display", desc = "")
+    @Accordion
+    val gemstoneMoneyPerHour: GemstoneMoneyPerHourConfig = GemstoneMoneyPerHourConfig()
 
     @Expose
     @ConfigOption(name = "Highlight Commission Mobs", desc = "Highlight mobs that are part of active commissions.")
