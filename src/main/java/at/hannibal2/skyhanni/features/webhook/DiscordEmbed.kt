@@ -1,4 +1,4 @@
-package at.hannibal2.skyhanni.features.webhooks
+package at.hannibal2.skyhanni.features.webhook
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
@@ -8,7 +8,7 @@ private val config get() = SkyHanniMod.feature.webhook
 
 data class DiscordEmbed(
     val title: String? = null,
-    val type: String? = null, // usually "rich"
+    val type: String? = null,
     val description: String? = null,
     val url: String? = null,
     val timestamp: String? = null,
