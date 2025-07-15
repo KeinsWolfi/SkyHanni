@@ -1,34 +1,32 @@
 package at.hannibal2.skyhanni
 
-//#if TODO
-import at.hannibal2.skyhanni.api.enoughupdates.EnoughUpdatesManager
-//#endif
+import at.hannibal2.skyhanni.api.enoughupdates.EnoughUpdatesRepoManager
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.event.SkyHanniEvents
 import at.hannibal2.skyhanni.config.ConfigFileType
+import at.hannibal2.skyhanni.config.ConfigGuiManager.openConfigGui
 import at.hannibal2.skyhanni.config.ConfigManager
 import at.hannibal2.skyhanni.config.Features
-//#if TODO
 import at.hannibal2.skyhanni.config.SackData
+import at.hannibal2.skyhanni.config.StorageData
+import at.hannibal2.skyhanni.config.commands.CommandCategory
+import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
+import at.hannibal2.skyhanni.data.GuiEditManager
 import at.hannibal2.skyhanni.data.OtherInventoryData
-//#endif
+import at.hannibal2.skyhanni.data.PetDataStorage
 import at.hannibal2.skyhanni.data.jsonobjects.local.FriendsJson
-//#if TODO
 import at.hannibal2.skyhanni.data.jsonobjects.local.JacobContestsJson
-//#endif
 import at.hannibal2.skyhanni.data.jsonobjects.local.KnownFeaturesJson
 import at.hannibal2.skyhanni.data.jsonobjects.local.VisualWordsJson
-//#if TODO
 import at.hannibal2.skyhanni.data.repo.RepoManager
-//#endif
 import at.hannibal2.skyhanni.events.utils.PreInitFinishedEvent
 import at.hannibal2.skyhanni.skyhannimodule.LoadedModules
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
-//#if TODO
+import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
-import at.hannibal2.skyhanni.utils.MinecraftConsoleFilter.Companion.initLogging
-//#endif
+import at.hannibal2.skyhanni.utils.MinecraftConsoleFilter
 import at.hannibal2.skyhanni.utils.VersionConstants
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.system.ModVersion
@@ -46,7 +44,6 @@ import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
-// todo 1.21 impl needed
 @SkyHanniModule
 object SkyHanniMod {
 
@@ -56,9 +53,6 @@ object SkyHanniMod {
         LoadedModules.modules.forEach { SkyHanniModLoader.loadModule(it) }
 
         SkyHanniEvents.init(modules)
-        //#if TODO
-        if (!PlatformUtils.isNeuLoaded()) EnoughUpdatesManager.downloadRepo()
-        //#endif
 
         PreInitFinishedEvent.post()
     }
@@ -66,19 +60,16 @@ object SkyHanniMod {
     fun init() {
         configManager = ConfigManager()
         configManager.firstLoad()
-        //#if TODO
-        initLogging()
-        //#endif
+        if (!PlatformUtils.isNeuLoaded()) EnoughUpdatesRepoManager.initRepo()
+        MinecraftConsoleFilter.initLogging()
         Runtime.getRuntime().addShutdownHook(
             Thread { configManager.saveConfig(ConfigFileType.FEATURES, "shutdown-hook") },
         )
-        //#if TODO
         try {
             RepoManager.initRepo()
         } catch (e: Exception) {
             Exception("Error reading repo data", e).printStackTrace()
         }
-        //#endif
     }
 
     @HandleEvent
@@ -86,13 +77,16 @@ object SkyHanniMod {
         screenToOpen?.let {
             screenTicks++
             if (screenTicks == 5) {
-                //#if TODO
                 val title = InventoryUtils.openInventoryName()
-                //#endif
-                MinecraftCompat.localPlayer.closeScreen()
-                //#if TODO
-                OtherInventoryData.close(title)
-                //#endif
+                if (shouldCloseScreen) {
+                    //#if MC < 1.21
+                    MinecraftCompat.localPlayer.closeScreen()
+                    //#else
+                    //$$ MinecraftCompat.localPlayer.closeHandledScreen()
+                    //#endif
+                    OtherInventoryData.close(title)
+                }
+                shouldCloseScreen = true
                 Minecraft.getMinecraft().displayGuiScreen(it)
                 screenTicks = 0
                 screenToOpen = null
@@ -110,15 +104,13 @@ object SkyHanniMod {
 
     @JvmField
     var feature: Features = Features()
-    //#if TODO
     lateinit var sackData: SackData
-    //#endif
+    lateinit var storageData: StorageData
     lateinit var friendsData: FriendsJson
     lateinit var knownFeaturesData: KnownFeaturesJson
-    //#if TODO
     lateinit var jacobContestsData: JacobContestsJson
-    //#endif
     lateinit var visualWordsData: VisualWordsJson
+    lateinit var petData: PetDataStorage
 
     lateinit var configManager: ConfigManager
     val logger: Logger = LogManager.getLogger("SkyHanni")
@@ -128,12 +120,18 @@ object SkyHanniMod {
 
     val modules: MutableList<Any> = ArrayList()
     private val globalJob: Job = Job(null)
+
+    // todo when no more direct .launch calls are made outside of this class, make this private
+    @Deprecated(
+        "Use SkyHanniMod.launchCoroutine or SkyHanniMod.launchIOCoroutine instead",
+        ReplaceWith("SkyHanniMod.launchCoroutine { ... }"),
+    )
     val coroutineScope = CoroutineScope(
         CoroutineName("SkyHanni") + SupervisorJob(globalJob),
     )
 
-    fun launchIOCoroutine(block: suspend CoroutineScope.() -> Unit) {
-        launchCoroutine {
+    fun launchIOCoroutine(block: suspend CoroutineScope.() -> Unit): Job {
+        return launchCoroutine {
             withContext(Dispatchers.IO) {
                 block()
             }
@@ -141,13 +139,16 @@ object SkyHanniMod {
     }
 
     var screenToOpen: GuiScreen? = null
+    var shouldCloseScreen: Boolean = true
     private var screenTicks = 0
     fun consoleLog(message: String) {
         logger.log(Level.INFO, message)
     }
 
-    fun launchCoroutine(function: suspend () -> Unit) {
-        coroutineScope.launch {
+    @Suppress("DEPRECATION")
+    fun launchCoroutine(function: suspend () -> Unit): Job {
+        @Suppress("DEPRECATION")
+        return coroutineScope.launch {
             try {
                 function()
             } catch (e: Exception) {
@@ -155,6 +156,31 @@ object SkyHanniMod {
                     e,
                     e.message ?: "Asynchronous exception caught",
                 )
+            }
+        }
+    }
+
+    @HandleEvent
+    fun onCommandRegistration(event: CommandRegistrationEvent) {
+        event.registerBrigadier("sh") {
+            aliases = listOf("skyhanni")
+            description = "Opens the main SkyHanni config"
+            literalCallback("gui") {
+                GuiEditManager.openGuiPositionEditor(hotkeyReminder = true)
+            }
+            argCallback("search", BrigadierArguments.greedyString()) { search ->
+                openConfigGui(search)
+            }
+            simpleCallback {
+                openConfigGui()
+            }
+        }
+        event.registerBrigadier("shconfigsave") {
+            description = "Manually saving the config"
+            category = CommandCategory.DEVELOPER_TEST
+            simpleCallback {
+                ChatUtils.chat("Manually saved the config!")
+                configManager.saveConfig(ConfigFileType.FEATURES, "manual-command")
             }
         }
     }
