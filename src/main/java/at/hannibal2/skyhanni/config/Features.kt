@@ -18,6 +18,7 @@ import at.hannibal2.skyhanni.config.features.misc.MiscConfig
 import at.hannibal2.skyhanni.config.features.rift.RiftConfig
 import at.hannibal2.skyhanni.config.features.skillprogress.SkillProgressConfig
 import at.hannibal2.skyhanni.config.features.slayer.SlayerConfig
+import at.hannibal2.skyhanni.config.features.webhooks.WebhookConfig
 import at.hannibal2.skyhanni.config.storage.Storage
 import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
 import com.google.gson.annotations.Expose

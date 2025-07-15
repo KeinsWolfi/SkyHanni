@@ -21,7 +21,7 @@ data class Webhook(
     val components: List<Any>? = null,
     @SerializedName("thread_name") val threadName: String? = null
 ) {
-    fun sendTo(webhookUrl: String = config.webhookUrl) {
+    suspend fun sendTo(webhookUrl: String = config.webhookUrl) {
         val feature: KMutableProperty0<*>
         if (webhookUrl.isEmpty()) {
             feature = config::webhookUrl
