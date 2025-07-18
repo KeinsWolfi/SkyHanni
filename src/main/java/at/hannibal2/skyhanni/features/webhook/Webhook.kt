@@ -1,10 +1,10 @@
 package at.hannibal2.skyhanni.features.webhook
 
 import at.hannibal2.skyhanni.SkyHanniMod
-import at.hannibal2.skyhanni.utils.ApiUtils
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ConfigUtils.jumpToEditor
 import at.hannibal2.skyhanni.utils.PlayerUtils
+import at.hannibal2.skyhanni.utils.api.ApiUtils
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import java.io.ByteArrayOutputStream
@@ -48,7 +48,7 @@ data class Webhook(
         // println("Sending JSON: $jsonPayload")
 
         SkyHanniMod.launchIOCoroutine {
-            ApiUtils.postJSON(webhookUrlToSend, jsonPayload, "Discord Webhook")
+            ApiUtils.postJson(webhookUrlToSend, jsonPayload, "Discord Webhook")
         }
     }
 

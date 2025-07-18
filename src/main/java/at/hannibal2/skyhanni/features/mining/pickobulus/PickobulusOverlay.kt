@@ -10,16 +10,15 @@ import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyClicked
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.LorenzVec
 //#if MC < 1.21
-import at.hannibal2.skyhanni.utils.RenderUtils.drawFilledBoundingBox
 //#else
-//$$ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 //$$ import at.hannibal2.skyhanni.utils.toLorenzVec
 //$$ import net.minecraft.block.BlockState
 //$$ import net.minecraft.block.Blocks
 //#endif
-import at.hannibal2.skyhanni.utils.RenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import net.minecraft.block.Block
 import net.minecraft.util.AxisAlignedBB

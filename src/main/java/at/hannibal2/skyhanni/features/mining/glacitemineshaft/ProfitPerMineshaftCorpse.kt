@@ -30,6 +30,7 @@ object ProfitPerMineshaftCorpse {
 
     private val config2 get() = SkyHanniMod.feature.mining.glaciteMineshaft.corpseTracker
 
+    @Suppress("CyclomaticComplexMethod")
     @HandleEvent
     fun onCorpseLooted(event: CorpseLootedEvent) {
         if (!config.profitPerCorpseLoot) return
@@ -74,8 +75,10 @@ object ProfitPerMineshaftCorpse {
         hover.add("§e$totalMessage")
         ChatUtils.hoverableChat(totalMessage, hover)
 
-        DelayedRun.runDelayed(1.seconds) {
-            ChatUtils.sendMessageToServer(totalMessage.removeColor())
+        if (corpseType == CorpseType.VANGUARD) {
+            DelayedRun.runDelayed(1.seconds) {
+                ChatUtils.sendMessageToServer("[SkyHanni] " + totalMessage.removeColor())
+            }
         }
 
         if (config2.corpseWebhookTypes.get().contains(corpseType) && config2.sendWebhookOnCorpseLoot) {
