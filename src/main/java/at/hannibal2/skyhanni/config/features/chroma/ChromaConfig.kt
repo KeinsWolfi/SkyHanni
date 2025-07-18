@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.config.features.chroma
 
 import at.hannibal2.skyhanni.config.FeatureToggle
-import at.hannibal2.skyhanni.config.HasLegacyId
 import at.hannibal2.skyhanni.config.features.gui.ChamsChromaConfig
 import at.hannibal2.skyhanni.features.chroma.ChromaManager
 import com.google.gson.annotations.Expose
@@ -45,13 +44,13 @@ class ChromaConfig {
     @ConfigEditorDropdown
     var chromaDirection: Direction = Direction.FORWARD_RIGHT
 
-    enum class Direction(private val displayName: String, private val legacyId: Int = -1) : HasLegacyId {
-        FORWARD_RIGHT("Forward + Right", 0),
-        FORWARD_LEFT("Forward + Left", 1),
-        BACKWARD_RIGHT("Backward + Right", 2),
-        BACKWARD_LEFT("Backward + Left", 3);
+    enum class Direction(private val displayName: String) {
+        FORWARD_RIGHT("Forward + Right"),
+        FORWARD_LEFT("Forward + Left"),
+        BACKWARD_RIGHT("Backward + Right"),
+        BACKWARD_LEFT("Backward + Left"),
+        ;
 
-        override fun getLegacyId() = legacyId
         override fun toString() = displayName
     }
 

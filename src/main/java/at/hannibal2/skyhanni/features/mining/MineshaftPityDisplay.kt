@@ -36,10 +36,11 @@ import at.hannibal2.skyhanni.utils.compat.BlockCompat
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat
 import at.hannibal2.skyhanni.utils.compat.hover
 import at.hannibal2.skyhanni.utils.renderables.Renderable
-import at.hannibal2.skyhanni.utils.renderables.StringRenderable
-import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable
-import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable
-import at.hannibal2.skyhanni.utils.renderables.item.ItemStackRenderable
+import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
+import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
+import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Companion.item
+import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
+import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import com.google.gson.annotations.Expose
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -84,11 +85,6 @@ object MineshaftPityDisplay {
         set(value) {
             profileStorage?.mineshaftTotalCount = value
         }
-
-    private val sinceVang get() = profileStorage?.mineshaftsEnteredSinceVanguard ?: 0
-
-    private val timeSinceVang: SimpleTimeMark
-        get() = profileStorage?.lastVanguardTime ?: SimpleTimeMark.farPast()
 
     private var sessionMineshafts = 0
 
@@ -226,54 +222,48 @@ object MineshaftPityDisplay {
             multipliers.forEach { multiplier ->
                 val iconsList = PityBlock.entries
                     .filter { it.multiplier == multiplier }
-                    .map { ItemStackRenderable(it.displayItem) }
+                    .map { Renderable.item(it.displayItem) }
                 add(
-                    HorizontalContainerRenderable(
-                        listOf(
-                            HorizontalContainerRenderable(iconsList),
-                            StringRenderable("§b${pityCounter / multiplier}"),
-                        ),
-                        2,
+                    Renderable.horizontal(
+                        Renderable.horizontal(iconsList),
+                        Renderable.text("§b${pityCounter / multiplier}"),
+                        spacing = 2,
                     ),
                 )
             }
         }
 
-        val neededToPityRenderable = VerticalContainerRenderable(
-            listOf(
-                StringRenderable("§3Needed to pity:"),
-                HorizontalContainerRenderable(
-                    listOf(
-                        Renderable.placeholder(10, 0),
-                        VerticalContainerRenderable(blocksToPityList),
-                    ),
-                ),
+        val neededToPityRenderable = Renderable.vertical(
+            Renderable.text("§3Needed to pity:"),
+            Renderable.horizontal(
+                Renderable.placeholder(10, 0),
+                Renderable.vertical(blocksToPityList),
             ),
         )
 
         val map = mapOf(
-            MineshaftPityLine.TITLE to StringRenderable("§9§lMineshaft Pity Counter"),
-            MineshaftPityLine.COUNTER to StringRenderable("§3Pity Counter: §e$counterUntilPity§6/§e$MAX_COUNTER"),
-            MineshaftPityLine.CHANCE to StringRenderable(
+            MineshaftPityLine.TITLE to Renderable.text("§9§lMineshaft Pity Counter"),
+            MineshaftPityLine.COUNTER to Renderable.text("§3Pity Counter: §e$counterUntilPity§6/§e$MAX_COUNTER"),
+            MineshaftPityLine.CHANCE to Renderable.text(
                 "§3Chance: §e1§6/§e${
                     chance.roundTo(1).addSeparators()
                 } §7(§b${((1.0 / chance) * 100).addSeparators()}%§7)",
             ),
             MineshaftPityLine.NEEDED_TO_PITY to neededToPityRenderable,
             MineshaftPityLine.TIME_SINCE_MINESHAFT to
-                StringRenderable("§3Last Mineshaft: §e${lastMineshaftSpawn.passedSince().format()}"),
+                Renderable.text("§3Last Mineshaft: §e${lastMineshaftSpawn.passedSince().format()}"),
             MineshaftPityLine.AVERAGE_BLOCKS_MINESHAFT to
-                StringRenderable(
+                Renderable.text(
                     "§3Average Blocks/Mineshaft: §e${(mineshaftTotalBlocks / mineshaftTotalCount.toDouble()).addSeparators()}",
                 ),
-            MineshaftPityLine.MINESHAFTS_TOTAL to StringRenderable("§3Mineshafts total: §e${mineshaftTotalCount.addSeparators()}"),
-            MineshaftPityLine.MINESHAFTS_SESSION to StringRenderable("§3Mineshafts this session: §e${sessionMineshafts.addSeparators()}"),
-            MineshaftPityLine.MINESHAFTS_SINCE_VANG to StringRenderable("§3Mineshafts since §fVanguard: §e${sinceVang.addSeparators()}"),
-            MineshaftPityLine.TIME_SINCE_VANG to StringRenderable("§3Time since §fVanguard: §e${timeSinceVang.passedSince().format()}"),
+            MineshaftPityLine.MINESHAFTS_TOTAL to Renderable.text("§3Mineshafts total: §e${mineshaftTotalCount.addSeparators()}"),
+            MineshaftPityLine.MINESHAFTS_SESSION to Renderable.text("§3Mineshafts this session: §e${sessionMineshafts.addSeparators()}"),
+            MineshaftPityLine.MINESHAFTS_SINCE_VANG to Renderable.text("§3Mineshafts since §fVanguard: §e${sinceVang.addSeparators()}"),
+            MineshaftPityLine.TIME_SINCE_VANG to Renderable.text("§3Time since §fVanguard: §e${timeSinceVang.passedSince().format()}"),
         )
 
         display = listOf(
-            VerticalContainerRenderable(
+            Renderable.vertical(
                 config.mineshaftPityLines.filter { it.shouldDisplay() }.mapNotNull { map[it] },
                 spacing = 2,
             ),
@@ -338,8 +328,6 @@ object MineshaftPityDisplay {
         AVERAGE_BLOCKS_MINESHAFT("§3Average Blocks/Mineshaft: §e361.5", { mineshaftTotalCount != 0 }),
         MINESHAFTS_TOTAL("§3Mineshafts total: §e23", { mineshaftTotalCount != 0 }),
         MINESHAFTS_SESSION("§3Mineshafts this session: §e3", { sessionMineshafts != 0 }),
-        MINESHAFTS_SINCE_VANG("§3Mineshafts since §fVanguard: §e171", { sinceVang != 0 }),
-        TIME_SINCE_VANG("§3Time since §fVanguard: §e1h 23m 45s", { !timeSinceVang.isFarPast() }),
         ;
 
         override fun toString() = display

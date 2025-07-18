@@ -33,6 +33,11 @@ class GlaciteMineshaftConfig {
     var shareWaypointLocation: Int = Keyboard.KEY_NONE
 
     @Expose
+    @ConfigOption(name = "Mineshaft Detection", desc = "")
+    @Accordion
+    val mineshaftDetectionConfig: MineshaftDetectionConfig = MineshaftDetectionConfig()
+
+    @Expose
     @ConfigOption(
         name = "Send Webhook When Entering a Vanguard Mineshaft",
         desc = "Send a Discord webhook when entering a Vanguard Mineshaft."

@@ -67,6 +67,8 @@ import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.stackUnderCursor
 import at.hannibal2.skyhanni.utils.renderables.DragNDrop
 import at.hannibal2.skyhanni.utils.renderables.Droppable
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.Renderable.Companion.renderBounds
 import at.hannibal2.skyhanni.utils.renderables.StringRenderable
@@ -483,7 +485,7 @@ object SkyHanniDebugsAndTests {
             }
 
             if (debugConfig.raytracedOreblock) {
-                BlockUtils.getBlockLookingAt(50.0)?.let { pos ->
+                BlockUtils.getTargetedBlockAtDistance(50.0)?.let { pos ->
                     OreBlock.getByStateOrNull(pos.getBlockStateAt())?.let { ore ->
                         config.debugOrePos.renderString(
                             "Looking at: ${ore.name} (${pos.toCleanString()})",
