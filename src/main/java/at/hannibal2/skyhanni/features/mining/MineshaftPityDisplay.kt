@@ -258,8 +258,6 @@ object MineshaftPityDisplay {
                 ),
             MineshaftPityLine.MINESHAFTS_TOTAL to Renderable.text("§3Mineshafts total: §e${mineshaftTotalCount.addSeparators()}"),
             MineshaftPityLine.MINESHAFTS_SESSION to Renderable.text("§3Mineshafts this session: §e${sessionMineshafts.addSeparators()}"),
-            MineshaftPityLine.MINESHAFTS_SINCE_VANG to Renderable.text("§3Mineshafts since §fVanguard: §e${sinceVang.addSeparators()}"),
-            MineshaftPityLine.TIME_SINCE_VANG to Renderable.text("§3Time since §fVanguard: §e${timeSinceVang.passedSince().format()}"),
         )
 
         display = listOf(
