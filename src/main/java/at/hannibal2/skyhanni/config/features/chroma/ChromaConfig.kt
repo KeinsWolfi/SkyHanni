@@ -61,7 +61,7 @@ class ChromaConfig {
     @Expose
     @ConfigOption(
         name = "Everything Chroma",
-        desc = "Render §4§l§oALL §r§7text in chroma. §e(Disables Patcher's Optimized Font Renderer while enabled)"
+        desc = "Render §4§l§oALL §r§7text in chroma. §e(Disables Patcher's Optimized Font Renderer while enabled)",
     )
     @ConfigEditorBoolean
     var allChroma: Boolean = false
@@ -69,7 +69,7 @@ class ChromaConfig {
     @Expose
     @ConfigOption(
         name = "Ignore Chat",
-        desc = "Prevent Everything Chroma from applying to the chat (if you unironically use that feature...)"
+        desc = "Prevent Everything Chroma from applying to the chat (if you unironically use that feature...)",
     )
     @ConfigEditorBoolean
     var ignoreChat: Boolean = false
