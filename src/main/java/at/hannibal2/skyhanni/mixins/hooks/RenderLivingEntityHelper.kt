@@ -7,10 +7,12 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniDebugsAndTests
-import at.hannibal2.skyhanni.utils.SpecialColor.toSpecialColorInt
+import at.hannibal2.skyhanni.utils.ColorUtils.toColor
+import at.hannibal2.skyhanni.utils.ColorUtils.toInt
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
 import at.hannibal2.skyhanni.utils.expand
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawEdges
+import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -70,7 +72,7 @@ object RenderLivingEntityHelper {
     private val entityChamsMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
     private val entityEspMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
-    private const val CHROMA_COLOR = "249:255:255:85:85"
+    private val CHROMA_COLOR = ChromaColour(0f, 1f, 1f, 250, 127)
 
     @HandleEvent
     fun onWorldChange() {
@@ -111,7 +113,7 @@ object RenderLivingEntityHelper {
     }
 
     fun <T : EntityLivingBase> setEntityColorWithNoHurtTimeChroma(entity: T, condition: () -> Boolean) {
-        entityColorMap[entity] = { config.color }
+        entityColorMap[entity] = { config.color.toColor() }
         entityColorCondition[entity] = condition
         entityNoHurtTimeCondition[entity] = condition
     }
@@ -189,7 +191,7 @@ object RenderLivingEntityHelper {
 
     @HandleEvent
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
-        val color = (255 shl 24) or (CHROMA_COLOR.toSpecialColorInt() and 0xFFFFFF)
+        val color = (255 shl 24) or (CHROMA_COLOR.toInt() and 0xFFFFFF)
         for ((entity, condition) in entityEspMap) {
             if (condition.invoke()) {
                 event.drawEdges(
