@@ -51,7 +51,6 @@ object SeaCreatureFeatures {
         if (!config.highlight) return
 
         mob.highlight(LorenzColor.GREEN.toChromaColor())
-    }
 
         // Merged logic from onMobFirstSeen
         val entity = mob.baseEntity
