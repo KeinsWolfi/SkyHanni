@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.mixins.hooks
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.data.GlobalRender
 import at.hannibal2.skyhanni.events.RenderEntityOutlineEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
@@ -156,7 +157,7 @@ object RenderLivingEntityHelper {
 
     @JvmStatic
     fun <T : EntityLivingBase> internalChams(entity: T): Boolean {
-        if (!SkyHanniDebugsAndTests.globalRender) return false
+        if (!GlobalRender.renderDisabled) return false
         if (entityChamsMap.containsKey(entity)) {
             val condition = entityChamsMap[entity]!!
             if (condition.invoke()) {
