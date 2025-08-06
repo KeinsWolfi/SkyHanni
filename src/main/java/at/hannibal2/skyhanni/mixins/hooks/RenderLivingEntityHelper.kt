@@ -18,6 +18,8 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.concurrent.ConcurrentHashMap
+
 //#if MC < 1.21
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -29,12 +31,13 @@ object RenderLivingEntityHelper {
     private val config get() = SkyHanniMod.feature.gui.chroma.chamsChromaConfig
 
     private val entityColorMap = mutableMapOf<EntityLivingBase, () -> Color>()
-    private val entityColorCondition = mutableMapOf<EntityLivingBase, () -> Boolean>()
+    private val entityColorCondition = ConcurrentHashMap<EntityLivingBase, () -> Boolean>()
 
     private val entityNoHurtTimeCondition = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
     @JvmStatic
     var areMobsHighlighted = false
+
     @JvmStatic
     var currentGlowEvent: RenderEntityOutlineEvent? = null
 
@@ -44,15 +47,7 @@ object RenderLivingEntityHelper {
 
     @JvmStatic
     fun check() {
-        areMobsHighlighted = false
-        val conditions = entityColorCondition.values
-        for (entry in conditions) {
-            if (entry.invoke()) {
-                areMobsHighlighted = true
-                return
-            }
-        }
-        if (currentGlowEvent?.entitiesToOutline?.isNotEmpty() == true) areMobsHighlighted = true
+        areMobsHighlighted = entityColorCondition.values.any { it() } || currentGlowEvent?.entitiesToOutline?.isNotEmpty() == true
     }
 
     @JvmStatic
@@ -137,7 +132,7 @@ object RenderLivingEntityHelper {
 
     @JvmStatic
     fun <T : EntityLivingBase> internalSetColorMultiplier(entity: T, default: Int): Int {
-        if (!SkyHanniDebugsAndTests.globalRender) return default
+        if (GlobalRender.renderDisabled) return default
         if (entityColorMap.containsKey(entity)) {
             val condition = entityColorCondition[entity] ?: return default
             if (condition.invoke()) {
@@ -149,7 +144,7 @@ object RenderLivingEntityHelper {
 
     @JvmStatic
     fun <T : EntityLivingBase> internalChangeHurtTime(entity: T): Int {
-        if (!SkyHanniDebugsAndTests.globalRender) return entity.hurtTime
+        if (GlobalRender.renderDisabled) return entity.hurtTime
         run {
             val condition = entityNoHurtTimeCondition[entity] ?: return@run
             if (condition.invoke()) {
