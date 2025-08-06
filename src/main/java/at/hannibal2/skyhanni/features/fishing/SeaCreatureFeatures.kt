@@ -31,7 +31,6 @@ import java.awt.Color
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-
 @SkyHanniModule
 object SeaCreatureFeatures {
 
