@@ -66,7 +66,7 @@ object RenderLivingEntityHelper {
     private val entityChamsMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
     private val entityEspMap = mutableMapOf<EntityLivingBase, () -> Boolean>()
 
-    private val CHROMA_COLOR = ChromaColour(0f, 1f, 1f, 250, 127)
+    private val CHROMA_COLOR = ChromaColour(0f, 0.7f, 0.7f, 3000, 127)
 
     @HandleEvent
     fun onWorldChange() {
